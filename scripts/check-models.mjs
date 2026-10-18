@@ -4,7 +4,7 @@ const args = ['--no-sandbox', '--enable-unsafe-webgpu', '--ignore-gpu-blocklist'
 const browser = await chromium.launch({ headless: true, args, executablePath: process.env.CHROMIUM_PATH });
 const page = await browser.newPage();
 page.on('console', msg => { if (msg.type() === 'error' || msg.type() === 'warning') console.log('browser:', msg.text().slice(0,500)); });
-await page.goto('http://127.0.0.1:5173/tests/model-harness.html');
+await page.goto((process.env.TEST_BASE_URL || 'http://127.0.0.1:5188')+'/tests/model-harness.html');
 await page.waitForFunction(() => typeof window.verifyModel === 'function');
 const device = await page.evaluate(async () => {
   const adapter = await navigator.gpu?.requestAdapter();

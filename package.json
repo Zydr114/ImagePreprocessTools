@@ -7,13 +7,15 @@
   },
   "type": "module",
   "scripts": {
-    "dev": "vite --host 0.0.0.0",
-    "build": "npm run assets && vue-tsc --noEmit && vite build",
-    "preview": "vite preview --host 0.0.0.0",
+    "dev": "vite --host 127.0.0.1",
+    "build": "npm run models && npm run assets && vue-tsc --noEmit && vite build",
+    "preview": "vite preview --host 127.0.0.1 --port 4188",
     "assets": "node scripts/runtime-assets.mjs",
     "models": "node scripts/download-models.mjs",
     "test": "vitest run",
-    "test:browser": "playwright test"
+    "test:browser": "playwright test",
+    "predev": "npm run assets",
+    "test:models": "node scripts/check-models.mjs"
   },
   "dependencies": {
     "mdui": "2.1.5",

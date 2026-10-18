@@ -6,6 +6,6 @@ export default defineConfig({
   plugins: [vue({ template: { compilerOptions: { isCustomElement: tag => tag.startsWith('mdui-') } } })],
   worker: { format: 'es' },
   optimizeDeps: { exclude: ['onnxruntime-web'] },
-  server: { host: '0.0.0.0', port: 5173, strictPort: true },
+  server: { host: '127.0.0.1', port: 5188, strictPort: true },
   build: { chunkSizeWarningLimit: 1200 },
 });

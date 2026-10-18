@@ -12,4 +12,5 @@ import 'mdui/components/dialog.js';
 import 'mdui/components/tooltip.js';
 import './style.css';
 import App from './App.vue';
-createApp(App).mount('#app');
+import {controlLabel} from './control-label';
+createApp(App).directive('control-label',controlLabel).mount('#app');

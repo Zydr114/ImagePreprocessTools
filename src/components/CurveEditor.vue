@@ -52,7 +52,7 @@ function numeric(axis:'x'|'y',event:Event){const value=Number((event.target as H
     <div class="point-values">
       <label>{{ periodic?'色相':'输入' }}<input aria-label="控制点输入值" type="number" :value="xValue" :disabled="selected===0||selected===points.length-1" @change="numeric('x',$event)"/></label>
       <label>{{ kind==='hue'?'偏移 °':kind==='saturation'?'增益 ×':kind==='lightness'?'偏移 %':'输出' }}<input aria-label="控制点输出值" type="number" :step="kind==='saturation'?.01:1" :value="yValue" @change="numeric('y',$event)"/></label>
-      <mdui-button-icon aria-label="删除控制点" :disabled="selected===0||selected>=points.length-1" @click="remove"><AppIcon name="trash" :size="17"/></mdui-button-icon>
+      <mdui-button-icon v-control-label aria-label="删除控制点" :disabled="selected===0||selected>=points.length-1" @click="remove"><AppIcon name="trash" :size="17"/></mdui-button-icon>
     </div>
     <p class="field-help">点击添加控制点 · 拖动调整 · 双击删除</p>
   </div>
