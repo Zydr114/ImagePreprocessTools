@@ -75,3 +75,14 @@ GPU_TEST=1 CHROMIUM_PATH=/path/to/chrome npm run test:models
 ```
 
 转换器会按锁文件下载和校验来源，产生模型、manifest、许可证和 `artifacts/models` CPU 张量参考。来源哈希变化会拒绝运行，升级时需人工审查差异。模型保存在 Git 中，下载恢复地址指向当前仓库的原始文件，没有依赖尚未发布的 Release。
+
+## 界面与主题
+
+- 使用 mdui 2 的 Layout、TopAppBar、NavigationRail / NavigationBar、NavigationDrawer、Card、Button / ButtonIcon、Chip、SegmentedButton、Select、TextField、Slider、Switch、Dialog、Snackbar、Progress、Tooltip、Divider。文件选择器为隐藏的原生 file input，曲线与图像画布为业务绘图组件。
+- 以 600 px 切换底部导航与侧边导航；1200 px 以下参数使用模态抽屉，以上固定展示。布局使用 8 px 间距体系、16 / 24 px 内容边距、mdui 字号 / 形状 / 色彩角色令牌。保留组件默认的按钮、滑块、输入框尺寸与造型。
+- [setColorScheme](https://www.mdui.org/zh-cn/docs/2/functions/setColorScheme) 根据种子色生成完整配色；页面背景、文字、边界、状态和控件统一使用 `--mdui-color-*`，外观通过 `setTheme` 切换。提供 6 个种子色与 `#RRGGBB` 输入，校验后保存到 localStorage；系统模式响应系统明暗变化。图标使用 `@mdui/icons` 本地 SVG 按需打包，无外部字体请求。
+- 删除宣传语、英文副标题和装饰性说明；保留字段标签、单位、格式、输出尺寸、进度、错误及许可入口。
+- Vue 对自定义元素可能直接赋值 DOM property。mdui Slider 的 `min / max / step` 必须使用数值绑定；静态 `min="-20"` 会成为字符串，导致步进计算中的 `min + steps * step` 拼接字符串。应用层同时约束边缘半径与导出质量的范围。
+- mdui 的 `close / closed` 是可冒泡的自定义事件；Dialog / NavigationDrawer 使用 `.self`，避免内部 Tooltip / Select 的关闭事件误关外层面板。对比分割手柄使用 mdui ButtonIcon，并将 slider 角色、名称与数值映射到实际获得焦点的内部按钮。Select / TextField 的标签同样转发至 Shadow DOM 中实际的输入控件。
+
+参考：[Google Material Design 3](https://m3.material.io/)、[mdui 设计令牌](https://www.mdui.org/zh-cn/docs/2/styles/design-tokens)、[NavigationRail](https://www.mdui.org/zh-cn/docs/2/components/navigation-rail)。

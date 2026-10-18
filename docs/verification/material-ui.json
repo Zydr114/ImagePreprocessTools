@@ -1,0 +1,73 @@
+{
+  "date": "2026-10-18",
+  "commit": "36e2b8cb6a0c98818fc5182704e701f148e55c29",
+  "baseURL": "http://127.0.0.1:4188/",
+  "build": "passed",
+  "coreTests": {
+    "passed": 12,
+    "failed": 0
+  },
+  "productionUi": {
+    "passed": 7,
+    "failed": 0,
+    "startTime": "2026-10-18T11:48:21.787Z",
+    "durationMs": 27641.435999999998,
+    "tests": [
+      {
+        "file": "sliders.spec.ts",
+        "name": "negative slider range remains bounded through pointer, drag, keyboard and remount",
+        "status": "passed",
+        "durationMs": 1207
+      },
+      {
+        "file": "ui.spec.ts",
+        "name": "page, import, curves, comparison and three actual export formats",
+        "status": "passed",
+        "durationMs": 7001
+      },
+      {
+        "file": "ui.spec.ts",
+        "name": "explicit WebGL super resolution, decimal output, reuse and original recovery",
+        "status": "passed",
+        "durationMs": 4543
+      },
+      {
+        "file": "ui.spec.ts",
+        "name": "foreground extraction, mask options, inversion and transparent PNG export",
+        "status": "passed",
+        "durationMs": 4999
+      },
+      {
+        "file": "ui.spec.ts",
+        "name": "cancel leaves input unchanged, malformed images produce an error",
+        "status": "passed",
+        "durationMs": 677
+      },
+      {
+        "file": "ui.spec.ts",
+        "name": "responsive Material navigation, parameter drawer and no horizontal overflow",
+        "status": "passed",
+        "durationMs": 4930
+      },
+      {
+        "file": "ui.spec.ts",
+        "name": "theme seed generates the palette, validates input and persists with appearance",
+        "status": "passed",
+        "durationMs": 3641
+      }
+    ]
+  },
+  "browser": "Chromium 153.0.8010.12",
+  "launch": "GPU_TEST=1, Vulkan / ANGLE",
+  "screenshots": [
+    "accepted-desktop.png",
+    "accepted-curves.png",
+    "accepted-mask.png",
+    "accepted-mobile.png",
+    "accepted-mobile-params.png",
+    "accepted-mobile-dark.png",
+    "accepted-theme.png",
+    "accepted-desktop-dark.png"
+  ],
+  "limits": "Responsive browser emulation only; no new physical phone or model matrix verification."
+}
