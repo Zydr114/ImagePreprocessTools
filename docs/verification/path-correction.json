@@ -1,0 +1,134 @@
+{
+  "release": {
+    "name": "ImagePreprocessTools",
+    "commit": "065c8c089980d198044e0c19d2655e84fe41c454",
+    "releaseId": "20261018T122047Z-065c8c089980",
+    "basePath": "/ImagePreprocessTools/",
+    "source": "https://github.com/Zydr114/ImagePreprocessTools/tree/065c8c089980d198044e0c19d2655e84fe41c454"
+  },
+  "allFilesMatching": 37,
+  "publicEntryAssets": [
+    "/ImagePreprocessTools/assets/index-DiDzk9h-.js",
+    "/ImagePreprocessTools/assets/index-ECR9flUy.css",
+    "/ImagePreprocessTools/assets/logo-B-CGkt3w.png"
+  ],
+  "modelAndRuntimeResources": 21,
+  "redirects": [
+    {
+      "from": "/ImagePreprocessTools",
+      "to": "/ImagePreprocessTools/",
+      "status": 308
+    },
+    {
+      "from": "/ImageProprocessTools",
+      "to": "/ImagePreprocessTools/",
+      "status": 308
+    },
+    {
+      "from": "/ImageProprocessTools/",
+      "to": "/ImagePreprocessTools/",
+      "status": 308
+    },
+    {
+      "from": "/ImageProprocessTools/models/manifest.json?check=migration",
+      "to": "/ImagePreprocessTools/models/manifest.json?check=migration",
+      "status": 308
+    }
+  ],
+  "missingResourcesStatus": 404,
+  "existingPages": {
+    "/": {
+      "status": 200,
+      "sha256": "cbfcaf2cee3b8938575ac13f2d1f44b2eed71073e0fb0d2224675c541c0edfb2"
+    },
+    "MakoLrcStudio/": {
+      "status": 200,
+      "sha256": "2477db4282044d8098a0315d56cd79f64956a2286a02320b2a49aecd35149251"
+    },
+    "AnimeCharacterGuessr/": {
+      "status": 200,
+      "sha256": "abdb79475ae1d2ed82344a0d22c78250502395f2b5af89c5ac141922ecaec411"
+    }
+  },
+  "date": "2026-10-18",
+  "baseURL": "https://tool.talium.site/ImagePreprocessTools/",
+  "build": "passed",
+  "deploymentTests": {
+    "passed": 3,
+    "failed": 0
+  },
+  "browserRedirectAndSource": {
+    "legacyBrowserURL": "https://tool.talium.site/ImageProprocessTools/",
+    "finalBrowserURL": "https://tool.talium.site/ImagePreprocessTools/",
+    "source": "https://github.com/Zydr114/ImagePreprocessTools/tree/065c8c089980d198044e0c19d2655e84fe41c454"
+  },
+  "onlineUI": {
+    "stats": {
+      "startTime": "2026-10-18T12:21:51.887Z",
+      "duration": 52675.001,
+      "expected": 7,
+      "skipped": 0,
+      "unexpected": 0,
+      "flaky": 0
+    },
+    "browser": "Chromium 153.0.8010.12",
+    "launch": "GPU_TEST=1, Vulkan / ANGLE",
+    "tests": [
+      {
+        "name": "negative slider range remains bounded through pointer, drag, keyboard and remount",
+        "status": "passed",
+        "durationMs": 1985
+      },
+      {
+        "name": "page, import, curves, comparison and three actual export formats",
+        "status": "passed",
+        "durationMs": 9600
+      },
+      {
+        "name": "explicit WebGL super resolution, decimal output, reuse and original recovery",
+        "status": "passed",
+        "durationMs": 9989
+      },
+      {
+        "name": "foreground extraction, mask options, inversion and transparent PNG export",
+        "status": "passed",
+        "durationMs": 18439
+      },
+      {
+        "name": "cancel leaves input unchanged, malformed images produce an error",
+        "status": "passed",
+        "durationMs": 1564
+      },
+      {
+        "name": "responsive Material navigation, parameter drawer and no horizontal overflow",
+        "status": "passed",
+        "durationMs": 6213
+      },
+      {
+        "name": "theme seed generates the palette, validates input and persists with appearance",
+        "status": "passed",
+        "durationMs": 4392
+      }
+    ]
+  },
+  "readme": {
+    "localLinksValid": 15,
+    "screenshots": [
+      {
+        "path": "docs/images/curves.png",
+        "sha256": "f8fc384926d9a117c827c7f5b3f3faba0eaf5f2ed91fdee9155d3d08eee53634"
+      },
+      {
+        "path": "docs/images/upscale-dark.png",
+        "sha256": "dce7e439ed1323de8e406cbe6bb70b56283548bfe312950d6699ae157ff0c78c"
+      }
+    ],
+    "visuallyInspected": true
+  },
+  "caddy": {
+    "configuration": "valid",
+    "service": "active",
+    "backup": "/var/backups/image-preprocess-tools/20261018T122047Z-065c8c089980/"
+  },
+  "limits": "No new model numerical matrix or physical-device coverage."
+}

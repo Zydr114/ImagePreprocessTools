@@ -58,7 +58,7 @@ TEST_BASE_URL=http://127.0.0.1:4188 GPU_TEST=1 CHROMIUM_PATH=/path/to/chrome \
 
 ## 品牌、许可与线上部署（2026-10-18）
 
-发布提交：`05eb94eda818c4a0f167ef5f036d6b1090947d80`。线上地址：<https://tool.talium.site/ImageProprocessTools/>。
+首次发布提交：`05eb94eda818c4a0f167ef5f036d6b1090947d80`。首次发布使用旧拼写路径，现已重定向；当前线上地址为 <https://tool.talium.site/ImagePreprocessTools/>。原始发布数据保留在 `deployment.json`。
 
 - 网站名称为 ImagePreprocessTools，顶部图标和 favicon 均使用 `assets/logo.png`；默认主题种子色为 Logo 橙色 `#FB7916`，保留已有用户主题选择。
 - 已精简 README，添加完整 AGPL v3 许可证；线上源代码入口指向本次发布提交。模型各自许可保留。
@@ -72,3 +72,15 @@ TEST_BASE_URL=http://127.0.0.1:4188 GPU_TEST=1 CHROMIUM_PATH=/path/to/chrome \
 发布编号：`20261018T120622Z-05eb94eda818`；服务器回滚备份：`/var/backups/image-preprocess-tools/20261018T120622Z-05eb94eda818/`。
 
 结构化摘要见 [deployment.json](deployment.json)。本机详细日志为 `artifacts/deploy-stage.log`、`deploy-activation.log`、`online-branding-tests.log`；HTTP 与文件校验详情为 `artifacts/deployment-verification.json`、`online-branding-details.json`。此次未重跑模型数值矩阵或扩大实体设备验收范围。
+
+## 链接修正与 README 补充（2026-10-18）
+
+发布提交：`065c8c089980d198044e0c19d2655e84fe41c454`。正确地址为 <https://tool.talium.site/ImagePreprocessTools/>，构建 base、服务器发布目录、激活检查和部署文档均已同步修正。
+
+- 旧拼写的目录地址及其子路径返回 308，子路径查询参数保留；浏览器访问旧地址后到达正确地址。新地址缺少尾斜杠时也返回 308。
+- 生产构建通过；部署脚本测试 3 / 3，线上 UI 回归 7 / 7，无未处理 pageerror。未改动处理核心与模型。
+- 37 个发布文件与本地构建的 SHA256 全部一致；入口 JS / CSS / Logo 公开访问字节一致；21 个模型及运行时资源状态、大小与 WASM MIME 检查通过，不存在的资源返回 404。
+- Caddy 校验与 reload 成功，服务 active；工具箱首页、MakoLrcStudio 和 AnimeCharacterGuessr 入口哈希与本次发布前一致。
+- README 添加 Logo、浅色曲线调色和深色 RealCUGAN 超分两张真实操作截图，列明主要运行依赖、模型来源、许可证与开发依赖；15 个本地图片及文档链接均存在，截图已经目视检查。
+
+发布编号：`20261018T122047Z-065c8c089980`；备份：`/var/backups/image-preprocess-tools/20261018T122047Z-065c8c089980/`。源码入口对应本次发布提交。结构化摘要见 [path-correction.json](path-correction.json)，本机详细日志与检查数据为 `artifacts/path-correction-*.log`、`artifacts/path-correction-*.json`。
