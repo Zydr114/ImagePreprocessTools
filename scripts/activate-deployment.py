@@ -9,7 +9,7 @@ import shutil
 import subprocess
 import tarfile
 
-SITE = Path('/var/www/tool.talium.site/ImageProprocessTools')
+SITE = Path('/var/www/tool.talium.site/ImagePreprocessTools')
 CADDY = Path('/etc/caddy/Caddyfile')
 ROUTE = Path('/etc/caddy/image-preprocess-tools.caddy')
 IMPORT = '\timport /etc/caddy/image-preprocess-tools.caddy\n'
@@ -82,7 +82,7 @@ def main():
     release.mkdir(parents=True)
     extract_release(archive, release)
     metadata = json.loads((release / 'release.json').read_text())
-    if metadata['commit'] != commit or metadata['basePath'] != '/ImageProprocessTools/':
+    if metadata['commit'] != commit or metadata['basePath'] != '/ImagePreprocessTools/':
         raise ValueError('Release identity mismatch')
     backup = Path('/var/backups/image-preprocess-tools') / release_id
     backup.mkdir(parents=True, mode=0o700)
@@ -104,7 +104,7 @@ def main():
         candidate.replace(CADDY)
         replaced_config = True
         subprocess.run(['systemctl', 'reload', 'caddy'], check=True)
-        response = subprocess.check_output(['curl', '--fail', '--silent', '--show-error', '--max-time', '20', '--resolve', 'tool.talium.site:443:127.0.0.1', 'https://tool.talium.site/ImageProprocessTools/release.json'])
+        response = subprocess.check_output(['curl', '--fail', '--silent', '--show-error', '--max-time', '20', '--resolve', 'tool.talium.site:443:127.0.0.1', 'https://tool.talium.site/ImagePreprocessTools/release.json'])
         if json.loads(response)['commit'] != commit:
             raise ValueError('Online release does not match the staged commit')
     except BaseException:
@@ -124,7 +124,7 @@ def main():
         raise
     finally:
         candidate.unlink(missing_ok=True)
-    print('Deployed: https://tool.talium.site/ImageProprocessTools/')
+    print('Deployed: https://tool.talium.site/ImagePreprocessTools/')
     print('Commit:', commit)
     print('Backup:', backup)
 

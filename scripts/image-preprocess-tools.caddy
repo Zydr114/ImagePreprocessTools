@@ -1,8 +1,15 @@
 # ImagePreprocessTools: independent static application route.
-redir /ImageProprocessTools /ImageProprocessTools/ 308
+redir /ImagePreprocessTools /ImagePreprocessTools/ 308
+
+# Keep previously shared links working, including resource paths and queries.
+redir /ImageProprocessTools /ImagePreprocessTools/ 308
 
 handle_path /ImageProprocessTools/* {
-	root * /var/www/tool.talium.site/ImageProprocessTools/current
+	redir * /ImagePreprocessTools{uri} 308
+}
+
+handle_path /ImagePreprocessTools/* {
+	root * /var/www/tool.talium.site/ImagePreprocessTools/current
 	header X-Content-Type-Options nosniff
 	header Referrer-Policy strict-origin-when-cross-origin
 	route {

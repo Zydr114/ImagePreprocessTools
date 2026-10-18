@@ -7,7 +7,7 @@ host="${DEPLOY_HOST:-tencent}"
 [[ -z "$(git status --porcelain)" ]] || { echo 'Commit source changes before staging a release.' >&2; exit 1; }
 commit="$(git rev-parse HEAD)"
 release_id="$(date -u +%Y%m%dT%H%M%SZ)-${commit:0:12}"
-export VITE_BASE_PATH='/ImageProprocessTools/'
+export VITE_BASE_PATH='/ImagePreprocessTools/'
 export VITE_SOURCE_REF="$commit"
 npm run build -- --outDir dist-deploy
 mkdir -p artifacts/deploy
