@@ -1,0 +1,15 @@
+import { createApp } from 'vue';
+import 'mdui/mdui.css';
+import 'mdui/components/button.js';
+import 'mdui/components/button-icon.js';
+import 'mdui/components/select.js';
+import 'mdui/components/menu-item.js';
+import 'mdui/components/slider.js';
+import 'mdui/components/switch.js';
+import 'mdui/components/text-field.js';
+import 'mdui/components/linear-progress.js';
+import 'mdui/components/dialog.js';
+import 'mdui/components/tooltip.js';
+import './style.css';
+import App from './App.vue';
+createApp(App).mount('#app');
