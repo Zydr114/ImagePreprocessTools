@@ -1,0 +1,45 @@
+{
+  "date": "2026-10-18",
+  "build": "production",
+  "origin": "http://127.0.0.1:4188",
+  "stats": {
+    "startTime": "2026-10-18T11:21:58.161Z",
+    "duration": 18843.966,
+    "expected": 5,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "tests": [
+    {
+      "name": "page, theme, import, curves, comparison and three actual export formats",
+      "status": "expected",
+      "expected": "passed",
+      "durationMs": 7017
+    },
+    {
+      "name": "explicit WebGL super resolution, decimal output, reuse and original recovery",
+      "status": "expected",
+      "expected": "passed",
+      "durationMs": 4835
+    },
+    {
+      "name": "foreground extraction, mask options, inversion and transparent PNG export",
+      "status": "expected",
+      "expected": "passed",
+      "durationMs": 4649
+    },
+    {
+      "name": "cancel leaves input unchanged, malformed images produce an error",
+      "status": "expected",
+      "expected": "passed",
+      "durationMs": 626
+    },
+    {
+      "name": "mobile layout, parameter drawer, dark mode and no horizontal overflow",
+      "status": "expected",
+      "expected": "passed",
+      "durationMs": 1239
+    }
+  ]
+}

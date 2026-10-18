@@ -1,0 +1,105 @@
+{
+  "date": "2026-10-18",
+  "build": "development",
+  "hardware": "AMD Radeon 880M / Vulkan ANGLE",
+  "stats": {
+    "startTime": "2026-10-18T11:17:20.980Z",
+    "duration": 56980.886,
+    "expected": 15,
+    "skipped": 0,
+    "unexpected": 0,
+    "flaky": 0
+  },
+  "tests": [
+    {
+      "name": "webgpu: all SR models, native 4x CUGAN and cutout",
+      "status": "expected",
+      "expected": "passed",
+      "durationMs": 5666
+    },
+    {
+      "name": "webgl: all SR models, native 4x CUGAN and cutout",
+      "status": "expected",
+      "expected": "passed",
+      "durationMs": 5637
+    },
+    {
+      "name": "wasm: all SR models, native 4x CUGAN and cutout",
+      "status": "expected",
+      "expected": "passed",
+      "durationMs": 9306
+    },
+    {
+      "name": "SRVGG multi-tile output matches independent full-frame inference",
+      "status": "expected",
+      "expected": "passed",
+      "durationMs": 9255
+    },
+    {
+      "name": "GPU tone agrees with CPU, including tile boundaries and alpha",
+      "status": "expected",
+      "expected": "passed",
+      "durationMs": 168
+    },
+    {
+      "name": "cancel rejects old job and preserves the next job and input pixels",
+      "status": "expected",
+      "expected": "passed",
+      "durationMs": 161
+    },
+    {
+      "name": "corrupted model cache is checked and repaired",
+      "status": "expected",
+      "expected": "passed",
+      "durationMs": 535
+    },
+    {
+      "name": "download failure is actionable and does not produce a result",
+      "status": "expected",
+      "expected": "passed",
+      "durationMs": 169
+    },
+    {
+      "name": "RealCUGAN 2x tile stitching matches full-frame PyTorch reference",
+      "status": "expected",
+      "expected": "passed",
+      "durationMs": 2035
+    },
+    {
+      "name": "RealCUGAN 4x tile stitching matches full-frame PyTorch reference",
+      "status": "expected",
+      "expected": "passed",
+      "durationMs": 3841
+    },
+    {
+      "name": "page, theme, import, curves, comparison and three actual export formats",
+      "status": "expected",
+      "expected": "passed",
+      "durationMs": 7350
+    },
+    {
+      "name": "explicit WebGL super resolution, decimal output, reuse and original recovery",
+      "status": "expected",
+      "expected": "passed",
+      "durationMs": 5050
+    },
+    {
+      "name": "foreground extraction, mask options, inversion and transparent PNG export",
+      "status": "expected",
+      "expected": "passed",
+      "durationMs": 4846
+    },
+    {
+      "name": "cancel leaves input unchanged, malformed images produce an error",
+      "status": "expected",
+      "expected": "passed",
+      "durationMs": 769
+    },
+    {
+      "name": "mobile layout, parameter drawer, dark mode and no horizontal overflow",
+      "status": "expected",
+      "expected": "passed",
+      "durationMs": 1311
+    }
+  ]
+}

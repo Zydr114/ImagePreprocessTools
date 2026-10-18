@@ -39,3 +39,8 @@
 - mdui + Vue: https://www.mdui.org/zh-cn/docs/2/frameworks/vue
 
 模型适配重点：RealCUGAN 分阶段同步四处 SE 均值；SRVGG 的 PReLU 等价展开；U2NetP 固定 320 输入下将 ceil 池化等价改写。采用相同转换产物验证双 GPU 后端。
+
+## 实施状态（2026-10-18）
+
+五项交付内容已完成。模型 / 工具、处理核心、mdui 工作区、浏览器验收与修正、调研及运行文档分步提交。最终生产包运行于 `http://127.0.0.1:4188/`，开发服务使用 5188 端口。
+具体已通过的测试和未覆盖的设备边界以 [验收记录](verification/README.md) 为准。

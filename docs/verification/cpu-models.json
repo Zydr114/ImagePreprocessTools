@@ -1,0 +1,75 @@
+[
+  {
+    "model": "realesr-general-x4v3",
+    "cpuMAE": 1.2030349694214237e-07,
+    "maxError": 8.344650268554688e-07
+  },
+  {
+    "model": "realesr-animevideov3",
+    "cpuMAE": 1.388024912785113e-07,
+    "maxError": 9.5367431640625e-07
+  },
+  {
+    "model": "cugan2-stage0",
+    "cpuMAE": 1.287553459405899e-07,
+    "maxError": 9.5367431640625e-07
+  },
+  {
+    "model": "cugan2-stage1",
+    "cpuMAE": 2.092310751322657e-07,
+    "maxError": 1.6689300537109375e-06
+  },
+  {
+    "model": "cugan2-stage2",
+    "cpuMAE": 2.964792656712234e-06,
+    "maxError": 1.5735626220703125e-05
+  },
+  {
+    "model": "cugan2-stage3",
+    "cpuMAE": 3.6791025195270777e-06,
+    "maxError": 1.621246337890625e-05
+  },
+  {
+    "model": "cugan2-stage4",
+    "cpuMAE": 3.1416493584401906e-07,
+    "maxError": 1.6689300537109375e-06
+  },
+  {
+    "model": "cugan2-upstream",
+    "cpuMAE": 0.0
+  },
+  {
+    "model": "cugan4-stage0",
+    "cpuMAE": 1.7829006537795067e-07,
+    "maxError": 1.9073486328125e-06
+  },
+  {
+    "model": "cugan4-stage1",
+    "cpuMAE": 4.296016413718462e-07,
+    "maxError": 2.86102294921875e-06
+  },
+  {
+    "model": "cugan4-stage2",
+    "cpuMAE": 2.2861058823764324e-06,
+    "maxError": 1.9788742065429688e-05
+  },
+  {
+    "model": "cugan4-stage3",
+    "cpuMAE": 1.1899646779056638e-06,
+    "maxError": 5.245208740234375e-06
+  },
+  {
+    "model": "cugan4-stage4",
+    "cpuMAE": 1.6332023733411916e-07,
+    "maxError": 1.087784767150879e-06
+  },
+  {
+    "model": "cugan4-upstream",
+    "cpuMAE": 0.0
+  },
+  {
+    "model": "u2netp",
+    "cpuMAE": 0.0,
+    "ceilPoolsRewritten": 33
+  }
+]
