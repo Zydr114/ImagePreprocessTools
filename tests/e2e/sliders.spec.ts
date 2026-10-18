@@ -1,6 +1,6 @@
 import {test,expect} from '@playwright/test';
 test('negative slider range remains bounded through pointer, drag, keyboard and remount',async({page})=>{
- await page.goto('/');await page.getByRole('button',{name:/智能抠图/}).click();
+ await page.goto('./');await page.getByRole('button',{name:/智能抠图/}).click();
  const slider=page.locator('mdui-slider[aria-label="边缘收缩或扩张"]');
  const verify=async()=>{
   const state=await slider.evaluate(e=>{const slider=e as HTMLElement&{value:number;min:number;max:number;step:number};return {value:slider.value,min:slider.min,max:slider.max,step:slider.step,left:parseFloat(slider.shadowRoot!.querySelector<HTMLElement>('[part="handle"]')!.style.left)};});

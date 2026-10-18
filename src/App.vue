@@ -3,6 +3,7 @@ import { ref,shallowRef,computed,watch,onMounted,onBeforeUnmount } from 'vue';
 import { setColorScheme } from 'mdui/functions/setColorScheme.js';
 import { setTheme } from 'mdui/functions/setTheme.js';
 import AppIcon from './components/AppIcon.vue';
+import logoUrl from '../assets/logo.png';
 import CurveEditor from './components/CurveEditor.vue';
 import ImageViewport from './components/ImageViewport.vue';
 import { defaultCurves,defaultPoints,curveKeys,curveLabels,applyTone,rgbToHsl } from './core/curves';
@@ -18,6 +19,7 @@ import { CACHE_NAME } from './inference/runtime';
 import type { ProcessResult,Task,UpscaleModel } from './inference/types';
 
 const baseUrl=import.meta.env.BASE_URL;
+const sourceUrl=`https://github.com/Zydr114/ImagePreprocessTools/tree/${import.meta.env.VITE_SOURCE_REF||'main'}`;
 function dragLeave(event:DragEvent){if(!(event.relatedTarget instanceof Node)||!(event.currentTarget as HTMLElement).contains(event.relatedTarget))dragging.value=false;}
 type Tool='upscale'|'tone'|'cutout';
 const tools=[{id:'upscale' as Tool,name:'图像超分',icon:'expand'},
@@ -120,9 +122,9 @@ type ThemeMode='light'|'dark'|'auto';
 const storedMode=localStorage.getItem('pixel-workshop-theme');
 const themeMode=ref<ThemeMode>(storedMode==='light'||storedMode==='dark'?storedMode:'auto');
 const storedSeed=localStorage.getItem('pixel-workshop-seed');
-const themeSeed=ref(storedSeed&&/^#[0-9a-f]{6}$/i.test(storedSeed)?storedSeed:'#6750a4');
+const themeSeed=ref(storedSeed&&/^#[0-9a-f]{6}$/i.test(storedSeed)?storedSeed:'#fb7916');
 const seedDraft=ref(themeSeed.value),themeOpen=ref(false),seedError=ref(false);
-const seedPresets=[{name:'紫色',value:'#6750a4'},{name:'蓝色',value:'#0061a4'},{name:'青色',value:'#006874'},{name:'绿色',value:'#386a20'},{name:'橙色',value:'#8b5000'},{name:'粉色',value:'#984061'}];
+const seedPresets=[{name:'紫色',value:'#6750a4'},{name:'蓝色',value:'#0061a4'},{name:'青色',value:'#006874'},{name:'绿色',value:'#386a20'},{name:'橙色',value:'#fb7916'},{name:'粉色',value:'#984061'}];
 const validHex=(value:string)=>/^#[0-9a-f]{6}$/i.test(value);
 function chooseScale(event:Event){
   const group=event.target as HTMLElement&{value:string},value=Number(group.value);
@@ -162,7 +164,7 @@ onBeforeUnmount(()=>{client.cancel();toneRenderer?.dispose();cancelAnimationFram
     <input ref="fileInput" class="visually-hidden" aria-label="选择图片文件" type="file" accept="image/png,image/jpeg,image/webp" @change="importFile(($event.target as HTMLInputElement).files?.[0])"/>
     <mdui-layout full-height>
       <mdui-top-app-bar :order="0">
-        <mdui-top-app-bar-title>像素工坊</mdui-top-app-bar-title>
+        <img class="app-logo" :src="logoUrl" alt="" width="32" height="32"/><mdui-top-app-bar-title title="ImagePreprocessTools">ImagePreprocessTools</mdui-top-app-bar-title>
         <mdui-tooltip content="外观与主题色"><mdui-button-icon v-control-label aria-label="外观与主题色" @click="themeOpen=true"><AppIcon name="palette"/></mdui-button-icon></mdui-tooltip>
         <mdui-tooltip content="设备与模型缓存"><mdui-button-icon v-control-label aria-label="设备与模型缓存" @click="infoOpen=true"><AppIcon name="info"/></mdui-button-icon></mdui-tooltip>
       </mdui-top-app-bar>
@@ -278,13 +280,13 @@ onBeforeUnmount(()=>{client.cancel();toneRenderer?.dispose();cancelAnimationFram
         <mdui-segmented-button-group selects="single" full-width :value="themeMode" @change="chooseMode($event)"><mdui-segmented-button value="auto"><AppIcon slot="icon" name="auto"/>系统</mdui-segmented-button><mdui-segmented-button value="light"><AppIcon slot="icon" name="sun"/>浅色</mdui-segmented-button><mdui-segmented-button value="dark"><AppIcon slot="icon" name="moon"/>深色</mdui-segmented-button></mdui-segmented-button-group>
         <h3>主题色</h3>
         <div class="seed-presets"><mdui-tooltip v-for="preset in seedPresets" :key="preset.value" :content="preset.name"><mdui-button-icon v-control-label :variant="themeSeed===preset.value?'tonal':'standard'" :aria-label="preset.name+'主题色'" :aria-pressed="themeSeed===preset.value" @click="applySeed(preset.value)"><AppIcon name="circle" :style="{color:preset.value}"/></mdui-button-icon></mdui-tooltip></div>
-        <mdui-text-field v-control-label label="自定义主题色" :value="seedDraft" :helper="seedError?'请输入有效的十六进制颜色，如 #6750A4':'#RRGGBB'" pattern="#?[0-9a-fA-F]{6}" @input="seedDraft=($event.target as HTMLInputElement).value;seedError=false" @keydown.enter="applySeed()"/>
+        <mdui-text-field v-control-label label="自定义主题色" :value="seedDraft" :helper="seedError?'请输入有效的十六进制颜色，如 #FB7916':'#RRGGBB'" pattern="#?[0-9a-fA-F]{6}" @input="seedDraft=($event.target as HTMLInputElement).value;seedError=false" @keydown.enter="applySeed()"/>
         <span v-if="seedError" class="export-error" role="alert">主题色格式无效</span>
       </div>
       <mdui-button slot="action" variant="text" @click="themeOpen=false">完成</mdui-button><mdui-button slot="action" @click="applySeed()">应用颜色</mdui-button>
     </mdui-dialog>
     <mdui-dialog :open="infoOpen" headline="设备与模型缓存" close-on-overlay-click close-on-esc @closed.self="infoOpen=false">
-      <div class="dialog-fields"><h3>图形设备</h3><p class="device-info">{{gpuName}}</p><div class="cache-row"><div><h3>模型缓存</h3><span>{{cacheSize}}</span></div><mdui-button variant="outlined" :disabled="busy" @click="clearCache">清理缓存</mdui-button></div><div class="output-dimensions"><span>输出上限</span><span>{{limits.edge}} px / {{limits.pixels/1e6}} MP</span></div><mdui-divider/><h3>模型许可</h3><div class="license-links"><mdui-button variant="text" :href="`${baseUrl}licenses/cugan.txt`" target="_blank" rel="noopener">RealCUGAN · MIT</mdui-button><mdui-button variant="text" :href="`${baseUrl}licenses/esrgan.txt`" target="_blank" rel="noopener">Real-ESRGAN · BSD</mdui-button><mdui-button variant="text" :href="`${baseUrl}licenses/u2net.txt`" target="_blank" rel="noopener">U²-Net · Apache 2.0</mdui-button></div></div><mdui-button slot="action" variant="text" @click="infoOpen=false">关闭</mdui-button>
+      <div class="dialog-fields"><h3>图形设备</h3><p class="device-info">{{gpuName}}</p><div class="cache-row"><div><h3>模型缓存</h3><span>{{cacheSize}}</span></div><mdui-button variant="outlined" :disabled="busy" @click="clearCache">清理缓存</mdui-button></div><div class="output-dimensions"><span>输出上限</span><span>{{limits.edge}} px / {{limits.pixels/1e6}} MP</span></div><mdui-divider/><h3>项目许可</h3><mdui-button variant="text" :href="sourceUrl" target="_blank" rel="noopener">AGPL-3.0 · 源代码</mdui-button><h3>模型许可</h3><div class="license-links"><mdui-button variant="text" :href="`${baseUrl}licenses/cugan.txt`" target="_blank" rel="noopener">RealCUGAN · MIT</mdui-button><mdui-button variant="text" :href="`${baseUrl}licenses/esrgan.txt`" target="_blank" rel="noopener">Real-ESRGAN · BSD</mdui-button><mdui-button variant="text" :href="`${baseUrl}licenses/u2net.txt`" target="_blank" rel="noopener">U²-Net · Apache 2.0</mdui-button></div></div><mdui-button slot="action" variant="text" @click="infoOpen=false">关闭</mdui-button>
     </mdui-dialog>
   </div>
 </template>

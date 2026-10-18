@@ -36,7 +36,8 @@ h3 {
 .visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
 mdui-layout { height: 100dvh; }
 mdui-layout-main { min-width: 0; background: rgb(var(--mdui-color-surface-container-low)); }
-mdui-top-app-bar-title { padding-left: 8px; }
+.app-logo { width: 32px; height: 32px; object-fit: contain; margin: 4px 8px; }
+mdui-top-app-bar-title { min-width: 0; }
 mdui-navigation-rail { padding-top: 16px; }
 mdui-navigation-rail-item { margin-bottom: 8px; }
 .workspace { display: flex; flex-direction: column; gap: 16px; min-height: 100%; padding: 24px; max-width: 1600px; margin-inline: auto; }
