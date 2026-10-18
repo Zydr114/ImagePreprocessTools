@@ -55,3 +55,20 @@ TEST_BASE_URL=http://127.0.0.1:4188 GPU_TEST=1 CHROMIUM_PATH=/path/to/chrome \
 ```
 
 本机日志：`artifacts/material-build.log`、`material-unit-tests.log`、`material-ui-tests.log`、`material-production-ui-tests.log`；截图：`artifacts/ui/accepted-*.png`。生产 UI 结果摘要保存为本目录 `material-ui.json`。
+
+## 品牌、许可与线上部署（2026-10-18）
+
+发布提交：`05eb94eda818c4a0f167ef5f036d6b1090947d80`。线上地址：<https://tool.talium.site/ImageProprocessTools/>。
+
+- 网站名称为 ImagePreprocessTools，顶部图标和 favicon 均使用 `assets/logo.png`；默认主题种子色为 Logo 橙色 `#FB7916`，保留已有用户主题选择。
+- 已精简 README，添加完整 AGPL v3 许可证；线上源代码入口指向本次发布提交。模型各自许可保留。
+- 本地生产构建通过，品牌更新后的本地 UI 回归 7 / 7；部署脚本的配置保留与归档校验测试 3 / 3。
+- 线上 Chromium UI 回归 7 / 7，无未处理 pageerror；包括实际 WebGL 1.7× 超分、WASM 抠图、曲线与三种格式下载、滑块边界、响应式和主题持久化。
+- 线上单独确认默认橙色选中、Logo 与 favicon 地址相同、AGPL 源代码链接与 `release.json` 的提交对应。
+- 服务器发布目录全部 37 个文件与本地构建 SHA256 一致；公开入口的 JS / CSS / Logo 字节一致；21 个模型与运行时资源的状态、长度通过检查，WASM MIME 正确。
+- 无尾斜杠地址返回 308；不存在的模型、WASM 和页面返回 404。Caddy 配置校验通过，reload 后服务 active。
+- 工具箱首页、MakoLrcStudio 和 AnimeCharacterGuessr 入口均返回 200，SHA256 与部署前一致。
+
+发布编号：`20261018T120622Z-05eb94eda818`；服务器回滚备份：`/var/backups/image-preprocess-tools/20261018T120622Z-05eb94eda818/`。
+
+结构化摘要见 [deployment.json](deployment.json)。本机详细日志为 `artifacts/deploy-stage.log`、`deploy-activation.log`、`online-branding-tests.log`；HTTP 与文件校验详情为 `artifacts/deployment-verification.json`、`online-branding-details.json`。此次未重跑模型数值矩阵或扩大实体设备验收范围。
