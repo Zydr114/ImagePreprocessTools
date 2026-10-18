@@ -10,7 +10,7 @@ const periodic=computed(()=>['hue','saturation','lightness'].includes(props.kind
 const current=computed(()=>props.points[Math.min(selected.value,props.points.length-1)]!);
 const line=computed(()=>{const lut=curveLut(props.points,periodic.value);return Array.from({length:257},(_,i)=>`${i?'L':'M'}${32+i/256*256},${264-lut[Math.round(i/256*1023)]!*240}`).join(' ');});
 const histPath=computed(()=>props.histogram?.map((v,i)=>`${i?'L':'M'}${32+i/(props.histogram!.length-1)*256},${264-v*170}`).join(' ')+' L288,264 L32,264Z');
-const color=computed(()=>({r:'#ba5c57',g:'#548269',b:'#587ab0'}[props.kind as 'r'|'g'|'b']||'var(--accent)'));
+const color=computed(()=>({r:'#ba5c57',g:'#548269',b:'#587ab0'}[props.kind as 'r'|'g'|'b']||'rgb(var(--mdui-color-primary))'));
 function update(index:number,x:number,y:number){
   const points=props.points.map(p=>({...p}));
   x=index===0?0:index===points.length-1?1:clamp(x,points[index-1]!.x+.005,points[index+1]!.x-.005);
@@ -40,20 +40,19 @@ function numeric(axis:'x'|'y',event:Event){const value=Number((event.target as H
   <div class="curve-editor">
     <svg ref="svg" class="curve-graph" viewBox="0 0 320 296" @pointerdown="start($event)" @pointermove="move" @pointerup="dragging=false" @pointercancel="dragging=false" role="group" :aria-label="`${kind} 曲线编辑器，点击添加控制点，方向键移动，Delete 删除`">
       <defs><linearGradient id="hue-axis"><stop offset="0" stop-color="#e66f6a"/><stop offset=".17" stop-color="#d5bd65"/><stop offset=".33" stop-color="#81b77b"/><stop offset=".5" stop-color="#69b7bb"/><stop offset=".67" stop-color="#7b8bd2"/><stop offset=".83" stop-color="#bf7fb5"/><stop offset="1" stop-color="#e66f6a"/></linearGradient></defs>
-      <rect x="32" y="24" width="256" height="240" rx="2" fill="var(--canvas-bg)"/>
-      <path v-if="histogram?.length" :d="histPath" fill="var(--accent)" opacity=".11"/>
-      <g stroke="var(--line)" stroke-width="1"><path v-for="i in [0,1,2,3,4]" :key="i" :d="`M${32+i*64} 24V264 M32 ${24+i*60}H288`"/></g>
-      <path :d="periodic?'M32 144H288':'M32 264L288 24'" stroke="var(--muted)" stroke-dasharray="3 5" opacity=".4"/>
+      <rect x="32" y="24" width="256" height="240" rx="2" fill="rgb(var(--mdui-color-surface-container))"/>
+      <path v-if="histogram?.length" :d="histPath" fill="rgb(var(--mdui-color-primary))" opacity=".11"/>
+      <g stroke="rgb(var(--mdui-color-outline-variant))" stroke-width="1"><path v-for="i in [0,1,2,3,4]" :key="i" :d="`M${32+i*64} 24V264 M32 ${24+i*60}H288`"/></g>
+      <path :d="periodic?'M32 144H288':'M32 264L288 24'" stroke="rgb(var(--mdui-color-on-surface-variant))" stroke-dasharray="3 5" opacity=".4"/>
       <path :d="line" :stroke="color" fill="none" stroke-width="2.4" pointer-events="none"/>
-      <circle v-for="(p,index) in points" :key="index" :cx="32+p.x*256" :cy="264-p.y*240" :r="index===selected?6:4.5" :fill="index===selected?color:'var(--panel)'" :stroke="color" stroke-width="2" tabindex="0" role="slider" :aria-label="`控制点 ${index+1}`" :aria-valuenow="Math.round(p.y*255)" :aria-valuemin="0" :aria-valuemax="255" @pointerdown.stop="start($event,index)" @keydown="key($event,index)" @focus="selected=index" @dblclick.stop="selected=index;remove()"/>
-      <rect x="32" y="275" width="256" height="5" rx="2" :fill="periodic?'url(#hue-axis)':'var(--line)'"/>
+      <circle v-for="(p,index) in points" :key="index" :cx="32+p.x*256" :cy="264-p.y*240" :r="index===selected?6:4.5" :fill="index===selected?color:'rgb(var(--mdui-color-surface))'" :stroke="color" stroke-width="2" tabindex="0" role="slider" :aria-label="`控制点 ${index+1}`" :aria-valuenow="Math.round(p.y*255)" :aria-valuemin="0" :aria-valuemax="255" @pointerdown.stop="start($event,index)" @keydown="key($event,index)" @focus="selected=index" @dblclick.stop="selected=index;remove()"/>
+      <rect x="32" y="275" width="256" height="5" rx="2" :fill="periodic?'url(#hue-axis)':'rgb(var(--mdui-color-outline-variant))'"/>
       <text x="23" y="268" text-anchor="end" class="graph-text">0</text><text x="23" y="29" text-anchor="end" class="graph-text">1</text>
     </svg>
     <div class="point-values">
-      <label>{{ periodic?'色相':'输入' }}<input aria-label="控制点输入值" type="number" :value="xValue" :disabled="selected===0||selected===points.length-1" @change="numeric('x',$event)"/></label>
-      <label>{{ kind==='hue'?'偏移 °':kind==='saturation'?'增益 ×':kind==='lightness'?'偏移 %':'输出' }}<input aria-label="控制点输出值" type="number" :step="kind==='saturation'?.01:1" :value="yValue" @change="numeric('y',$event)"/></label>
-      <mdui-button-icon v-control-label aria-label="删除控制点" :disabled="selected===0||selected>=points.length-1" @click="remove"><AppIcon name="trash" :size="17"/></mdui-button-icon>
+      <mdui-text-field v-control-label aria-label="控制点输入值" :label="periodic?'色相':'输入'" type="number" :min="0" :max="periodic?360:255" :step="1" :value="String(xValue)" :disabled="selected===0||selected===points.length-1" @change="numeric('x',$event)"/>
+      <mdui-text-field v-control-label aria-label="控制点输出值" :label="kind==='hue'?'偏移 °':kind==='saturation'?'增益 ×':kind==='lightness'?'偏移 %':'输出'" type="number" :min="kind==='hue'?-180:kind==='lightness'?-50:0" :max="kind==='hue'?180:kind==='saturation'?2:kind==='lightness'?50:255" :step="kind==='saturation'?.01:1" :value="String(yValue)" @change="numeric('y',$event)"/>
+      <mdui-tooltip content="删除控制点"><mdui-button-icon v-control-label aria-label="删除控制点" :disabled="selected===0||selected>=points.length-1" @click="remove"><AppIcon name="trash"/></mdui-button-icon></mdui-tooltip>
     </div>
-    <p class="field-help">点击添加控制点 · 拖动调整 · 双击删除</p>
   </div>
 </template>

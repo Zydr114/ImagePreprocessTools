@@ -18,6 +18,7 @@
     "test:models": "node scripts/check-models.mjs"
   },
   "dependencies": {
+    "@mdui/icons": "^1.0.4",
     "mdui": "2.1.5",
     "onnx-proto": "^8.0.1",
     "onnxruntime-web": "1.30.0",

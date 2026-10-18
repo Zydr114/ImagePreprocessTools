@@ -20,9 +20,9 @@ import type { ProcessResult,Task,UpscaleModel } from './inference/types';
 const baseUrl=import.meta.env.BASE_URL;
 function dragLeave(event:DragEvent){if(!(event.relatedTarget instanceof Node)||!(event.currentTarget as HTMLElement).contains(event.relatedTarget))dragging.value=false;}
 type Tool='upscale'|'tone'|'cutout';
-const tools=[{id:'upscale' as Tool,name:'图像超分',en:'Super resolution',icon:'expand',number:'01',title:'让清晰，更进一步。',description:'用轻量 AI 模型，找回照片的细节与插画的线条。'},
-  {id:'tone' as Tool,name:'曲线调色',en:'Color & curves',icon:'curves',number:'02',title:'把色彩，调成你的样子。',description:'从明暗到色相，让每一条曲线都成为表达。'},
-  {id:'cutout' as Tool,name:'智能抠图',en:'Remove background',icon:'cut',number:'03',title:'留下主角，释放想象。',description:'一键提取主要前景，为下一次创作留出空间。'}];
+const tools=[{id:'upscale' as Tool,name:'图像超分',icon:'expand'},
+  {id:'tone' as Tool,name:'曲线调色',icon:'curves'},
+  {id:'cutout' as Tool,name:'智能抠图',icon:'cut'}];
 const tool=ref<Tool>('upscale'),activeTool=computed(()=>tools.find(t=>t.id===tool.value)!);
 const fileInput=ref<HTMLInputElement>(),filename=ref(''),current=shallowRef<PixelImage>(),original=shallowRef<PixelImage>();
 const before=shallowRef<HTMLCanvasElement>(),thumbnail=shallowRef<PixelImage>(),processed=shallowRef<PixelImage>(),resultCanvas=shallowRef<HTMLCanvasElement>(),liveCanvas=shallowRef<HTMLCanvasElement>();
@@ -31,7 +31,8 @@ const curves=ref<Curves>(defaultCurves()),curve=ref<CurveKey>('rgb'),maskOptions
 const previewVersion=ref(0),toneBackend=ref('WebGL2'),showMask=ref(false),compare=ref(true),paramsOpen=ref(false),dragging=ref(false);
 const model=ref<UpscaleModel>('realcugan'),scale=ref(2),tile=ref(128),backend=ref<Backend|'auto'>('auto');
 const capabilities=ref({webgpu:false,webgl:false}),gpuName=ref('正在检测图形能力'),busy=ref(false),loadingImage=ref(false),progress=ref(0),progressLabel=ref(''),error=ref(''),notice=ref('');
-const exportOpen=ref(false),infoOpen=ref(false),exportFormat=ref('image/png'),quality=ref(.92),background=ref('#ffffff'),exportName=ref(''),saving=ref(false),dark=ref(false);
+const exportOpen=ref(false),infoOpen=ref(false),exportFormat=ref('image/png'),quality=ref(.92),background=ref('#ffffff'),exportName=ref(''),saving=ref(false);
+const compactParams=ref(matchMedia('(max-width:1199px)').matches),compactNav=ref(matchMedia('(max-width:599px)').matches);
 const mobile=ref(matchMedia('(max-width: 700px)').matches),steps=ref(0),cacheSize=ref('尚未检测');
 const client=new ProcessingClient();let operation=0,importSequence=0,toneRenderer:ToneRenderer|undefined,previewFrame=0,noticeTimer:ReturnType<typeof setTimeout>|undefined;
 const limits=computed(()=>mobile.value?mobileLimits:desktopLimits);
@@ -115,69 +116,175 @@ async function save(){
   finally{saving.value=false;}
 }
 function updateNumber(target:'scale'|'tile'|'quality'|'shift'|'feather',event:Event){const value=Number((event.target as HTMLInputElement).value);if(!Number.isFinite(value))return;if(target==='scale')scale.value=Math.max(1,Math.min(4,value));else if(target==='tile')tile.value=value;else if(target==='quality')quality.value=Math.max(.1,Math.min(1,value));else maskOptions.value={...maskOptions.value,[target]:Math.max(target==='shift'?-20:0,Math.min(20,value))};}
-function theme(){dark.value=!dark.value;setTheme(dark.value?'dark':'light');localStorage.setItem('pixel-workshop-theme',dark.value?'dark':'light');}
+type ThemeMode='light'|'dark'|'auto';
+const storedMode=localStorage.getItem('pixel-workshop-theme');
+const themeMode=ref<ThemeMode>(storedMode==='light'||storedMode==='dark'?storedMode:'auto');
+const storedSeed=localStorage.getItem('pixel-workshop-seed');
+const themeSeed=ref(storedSeed&&/^#[0-9a-f]{6}$/i.test(storedSeed)?storedSeed:'#6750a4');
+const seedDraft=ref(themeSeed.value),themeOpen=ref(false),seedError=ref(false);
+const seedPresets=[{name:'紫色',value:'#6750a4'},{name:'蓝色',value:'#0061a4'},{name:'青色',value:'#006874'},{name:'绿色',value:'#386a20'},{name:'橙色',value:'#8b5000'},{name:'粉色',value:'#984061'}];
+const validHex=(value:string)=>/^#[0-9a-f]{6}$/i.test(value);
+function chooseScale(event:Event){
+  const group=event.target as HTMLElement&{value:string},value=Number(group.value);
+  if([1,2,3,4].includes(value))scale.value=value;
+  else group.value=[1,2,3,4].includes(scale.value)?String(scale.value):'';
+}
+function chooseMode(event:Event){
+  const group=event.target as HTMLElement&{value:string};
+  if(['light','dark','auto'].includes(group.value))themeMode.value=group.value as ThemeMode;
+  else group.value=themeMode.value;
+}
+function applySeed(value=seedDraft.value){
+  const hex=value.trim().replace(/^#?/,'#');
+  if(!validHex(hex)){seedError.value=true;return;}
+  themeSeed.value=hex.toLowerCase();seedDraft.value=themeSeed.value;seedError.value=false;
+  setColorScheme(themeSeed.value);localStorage.setItem('pixel-workshop-seed',themeSeed.value);
+}
+watch(themeMode,value=>{setTheme(value);localStorage.setItem('pixel-workshop-theme',value);});
+watch(themeOpen,value=>{if(value){seedDraft.value=themeSeed.value;seedError.value=false;}});
 async function cacheInfo(){const cache=await caches.open(CACHE_NAME);let total=0;for(const key of await cache.keys()){const response=await cache.match(key);if(response)total+=(await response.blob()).size;}cacheSize.value=(total/1e6).toFixed(1)+' MB';}
 async function clearCache(){if(busy.value)return;await caches.delete(CACHE_NAME);await cacheInfo();flash('模型缓存已清理，下次运行时会重新下载');}
 function paste(event:ClipboardEvent){const file=Array.from(event.clipboardData?.files||[]).find(f=>f.type.startsWith('image/'));if(file){event.preventDefault();void importFile(file);}}
 function shortcut(event:KeyboardEvent){if((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==='o'){event.preventDefault();fileInput.value?.click();}if((event.ctrlKey||event.metaKey)&&event.key.toLowerCase()==='s'){event.preventDefault();openExport();}if(event.key==='Escape'){if(busy.value)cancel();paramsOpen.value=false;}}
-const media=matchMedia('(max-width:700px)');const resizeDevice=()=>mobile.value=media.matches;
+const media=matchMedia('(max-width:700px)'),parameterMedia=matchMedia('(max-width:1199px)'),navMedia=matchMedia('(max-width:599px)');
+const resizeDevice=()=>{mobile.value=media.matches;compactParams.value=parameterMedia.matches;compactNav.value=navMedia.matches;};
 onMounted(async()=>{
-  setColorScheme('#4b6757');dark.value=(localStorage.getItem('pixel-workshop-theme')|| (matchMedia('(prefers-color-scheme:dark)').matches?'dark':'light'))==='dark';setTheme(dark.value?'dark':'light');
-  document.addEventListener('paste',paste);document.addEventListener('keydown',shortcut);media.addEventListener('change',resizeDevice);
+  setColorScheme(themeSeed.value);setTheme(themeMode.value);
+  document.addEventListener('paste',paste);document.addEventListener('keydown',shortcut);media.addEventListener('change',resizeDevice);parameterMedia.addEventListener('change',resizeDevice);navMedia.addEventListener('change',resizeDevice);
   try{const canvas=document.createElement('canvas'),gl=canvas.getContext('webgl2');capabilities.value.webgl=!!gl;const info=gl?.getExtension('WEBGL_debug_renderer_info');gpuName.value=gl&&info?gl.getParameter(info.UNMASKED_RENDERER_WEBGL):'CPU 兼容模式';gl?.getExtension('WEBGL_lose_context')?.loseContext();const adapter=await navigator.gpu?.requestAdapter();capabilities.value.webgpu=!!adapter;if(adapter)gpuName.value=adapter.info.description||`${adapter.info.vendor} ${adapter.info.architecture}`;}catch{gpuName.value='将按浏览器能力选择后端';}
 });
 watch(infoOpen,value=>{if(value)void cacheInfo();});
-onBeforeUnmount(()=>{client.cancel();toneRenderer?.dispose();cancelAnimationFrame(previewFrame);clearTimeout(noticeTimer);document.removeEventListener('paste',paste);document.removeEventListener('keydown',shortcut);media.removeEventListener('change',resizeDevice);});
+onBeforeUnmount(()=>{client.cancel();toneRenderer?.dispose();cancelAnimationFrame(previewFrame);clearTimeout(noticeTimer);document.removeEventListener('paste',paste);document.removeEventListener('keydown',shortcut);media.removeEventListener('change',resizeDevice);parameterMedia.removeEventListener('change',resizeDevice);navMedia.removeEventListener('change',resizeDevice);});
 </script>
 
 <template>
   <div class="application" @dragover.prevent="dragging=true" @dragleave="dragLeave" @drop.prevent="dragging=false;importFile($event.dataTransfer?.files[0])">
     <input ref="fileInput" class="visually-hidden" aria-label="选择图片文件" type="file" accept="image/png,image/jpeg,image/webp" @change="importFile(($event.target as HTMLInputElement).files?.[0])"/>
-    <header class="app-header"><a class="brand" href="./" aria-label="像素工坊首页"><span class="brand-mark"><i/><i/><i/><i/></span><span>像素工坊<small>PIXEL WORKSHOP</small></span></a><div class="header-right"><span class="privacy-pill"><AppIcon name="shield" :size="15"/>本地处理 · 隐私优先</span><span class="header-divider"/><mdui-button-icon v-control-label :aria-label="dark?'切换浅色主题':'切换深色主题'" @click="theme"><AppIcon :name="dark?'sun':'moon'"/></mdui-button-icon><mdui-button-icon v-control-label aria-label="关于与模型缓存" @click="infoOpen=true"><AppIcon name="info"/></mdui-button-icon></div></header>
-    <div class="app-layout">
-      <aside class="navigation"><div class="nav-caption">创作工具 <span>03</span></div><nav aria-label="图像处理工具"><button v-for="item in tools" :key="item.id" class="nav-item" :class="{active:tool===item.id}" :aria-current="tool===item.id?'page':undefined" @click="tool=item.id;paramsOpen=false"><AppIcon :name="item.icon" :size="22"/><span>{{item.name}}<small>{{item.en}}</small></span><span class="nav-number">{{item.number}}</span></button></nav><div class="nav-note"><span class="little-stars">✳</span><p>好工具，让创作<br/>多一点自由。</p><span>在你的浏览器里，完成。</span></div><button class="nav-about" @click="infoOpen=true">关于工坊 <span>v0.1</span></button></aside>
-      <main class="workspace">
-        <div class="workspace-heading"><div><div class="eyebrow"><span>{{activeTool.number}}</span> / {{activeTool.en.toUpperCase()}}</div><h1>{{activeTool.name}}</h1><p>{{activeTool.description}}</p></div><mdui-button v-if="current" variant="outlined" class="replace-button" @click="fileInput?.click()"><AppIcon slot="icon" name="upload" :size="17"/>导入图片</mdui-button><mdui-button class="mobile-params" variant="tonal" @click="paramsOpen=true"><AppIcon slot="icon" name="settings" :size="17"/>调整参数</mdui-button></div>
-        <div v-if="error" class="error-banner" role="alert"><AppIcon name="info" :size="19"/><span>{{error}}</span><button aria-label="关闭错误提示" @click="error=''"><AppIcon name="close" :size="17"/></button></div>
-        <section v-if="!current" class="empty-workspace" aria-label="导入图像">
-          <div class="empty-topline"><span class="micro-label">A LITTLE MORE POSSIBILITY</span><span class="tiny-cross">+</span></div>
-          <div class="empty-illustration" aria-hidden="true"><div class="image-sheet sheet-back"><span/></div><div class="image-sheet sheet-front"><svg viewBox="0 0 280 200" fill="none"><rect width="280" height="200" fill="#d7e2d9"/><circle cx="205" cy="51" r="23" fill="#f2ddb7"/><path d="M0 156 73 57l83 104 49-62 75 84v17H0Z" fill="#91ac9a"/><path d="m0 197 105-92 84 95H0Z" fill="#557b64"/><path d="m124 200 93-70 63 40v30Z" fill="#355f49"/></svg><span class="sheet-caption"><i/>MAKE ROOM FOR DETAIL</span></div><span class="illustration-spark">✳</span><span class="illustration-corner">↗</span></div>
-          <h2>{{activeTool.title}}</h2><p class="empty-description">一张图像，无限可能。把它交给工坊，<br class="desktop-break"/>从这里开始下一次创作。</p>
-          <button class="upload-zone" @click="fileInput?.click()" :disabled="loadingImage"><span class="upload-symbol"><AppIcon name="upload" :size="24"/></span><strong>{{loadingImage?'正在读取图片…':'点击上传，或将图片拖到这里'}}</strong><span>PNG、JPEG、WebP <i>·</i> 也可直接粘贴图片</span></button>
-          <button class="demo-button" @click="demo">暂时没有图片？<span>试试示例 <AppIcon name="arrow" :size="15"/></span></button>
-          <div class="empty-footer"><AppIcon name="shield" :size="15"/><span>图片不上传服务器，所有处理在本地完成</span></div>
-        </section>
-        <template v-else>
-          <div class="file-strip"><div><AppIcon name="image" :size="17"/><strong :title="filename">{{filename}}</strong><span>{{current.width}} × {{current.height}}</span><span v-if="steps" class="step-badge">已应用 {{steps}} 步</span></div><button class="text-action" @click="reset"><AppIcon name="reset" :size="15"/>恢复原图</button></div>
-          <ImageViewport v-if="before" :before="before" :after="after" :version="previewVersion" :width="displaySize[0]!" :height="displaySize[1]!" :compare="compare" :mask="tool==='cutout'&&showMask" @replace="fileInput?.click()"/>
-          <div class="result-toolbar"><label class="switch-label"><mdui-switch v-control-label aria-label="前后对比" :checked="compare" @change="compare=($event.target as HTMLInputElement).checked"/>前后对比</label><span v-if="tool==='tone'" class="result-detail"><span class="status-dot"/>{{toneBackend}} 实时预览 · 原尺寸导出</span><span v-else-if="resultInfo" class="result-detail">{{prettyBackend(resultInfo.backend)}} · {{(resultInfo.ms/1000).toFixed(2)}} s</span><span v-else class="result-detail">参数就绪后，点击右侧开始处理</span><mdui-button v-if="canExport" variant="text" :disabled="busy" @click="applyResult">作为下一步输入<AppIcon slot="end-icon" name="arrow" :size="16"/></mdui-button></div>
-        </template>
-        <div class="workspace-footer"><span><i class="status-dot"/>{{prettyBackend(selectedBackend)}} 就绪</span><span>小而专注，处理好每一张图。</span></div>
-      </main>
-      <div v-if="paramsOpen" class="params-backdrop" @click="paramsOpen=false"/>
-      <aside class="parameters" :class="{'mobile-open':paramsOpen}" aria-label="处理参数"><div class="parameters-title"><span>调整参数</span><mdui-button-icon v-control-label class="close-params" aria-label="关闭参数面板" @click="paramsOpen=false"><AppIcon name="close"/></mdui-button-icon><span class="parameter-symbol">↗</span></div>
-        <div class="parameter-scroll">
-          <div v-show="tool==='upscale'">
-            <section class="parameter-section"><h2><span>01</span>选择模型</h2><mdui-select label="超分模型" :value="model" :disabled="busy" @change="model=($event.target as HTMLSelectElement).value as UpscaleModel"><mdui-menu-item v-for="(item,key) in modelMeta" :key="key" :value="key">{{item.name}}</mdui-menu-item></mdui-select><p class="model-description">{{modelMeta[model].description}}</p><span class="model-size">{{modelMeta[model].size}}</span></section>
-            <section class="parameter-section"><h2><span>02</span>输出倍率</h2><div class="scale-presets"><button v-for="n in [1,2,3,4]" :key="n" :class="{selected:scale===n}" :disabled="busy" @click="scale=n">{{n}}<span>×</span></button></div><div class="scale-value-row"><label for="scale-input">自定义倍率</label><input id="scale-input" data-testid="scale-input" type="number" min="1" max="4" step=".1" :value="scale" :disabled="busy" @change="updateNumber('scale',$event)"/><span>倍</span></div><div class="output-dimensions"><span>输出尺寸</span><strong>{{current?dimensions:'— × —'}}</strong></div><p class="field-help">支持 1～4 倍。非原生倍率会在超分后进行高质量重采样。</p></section>
+    <mdui-layout full-height>
+      <mdui-top-app-bar :order="0">
+        <mdui-top-app-bar-title>像素工坊</mdui-top-app-bar-title>
+        <mdui-tooltip content="外观与主题色"><mdui-button-icon v-control-label aria-label="外观与主题色" @click="themeOpen=true"><AppIcon name="palette"/></mdui-button-icon></mdui-tooltip>
+        <mdui-tooltip content="设备与模型缓存"><mdui-button-icon v-control-label aria-label="设备与模型缓存" @click="infoOpen=true"><AppIcon name="info"/></mdui-button-icon></mdui-tooltip>
+      </mdui-top-app-bar>
+      <mdui-navigation-rail v-if="!compactNav" :order="1" :value="tool" aria-label="图像处理工具">
+        <mdui-navigation-rail-item v-for="item in tools" :key="item.id" :value="item.id" role="button" :aria-label="item.name" :aria-current="tool===item.id?'page':undefined" @click="tool=item.id;paramsOpen=false" @keydown.enter="tool=item.id" @keydown.space.prevent="tool=item.id">
+          <AppIcon slot="icon" :name="item.icon"/><AppIcon slot="active-icon" :name="item.icon"/>{{item.name}}
+        </mdui-navigation-rail-item>
+      </mdui-navigation-rail>
+      <mdui-navigation-bar v-else :order="1" :value="tool" aria-label="图像处理工具">
+        <mdui-navigation-bar-item v-for="item in tools" :key="item.id" :value="item.id" role="button" :aria-label="item.name" :aria-current="tool===item.id?'page':undefined" @click="tool=item.id;paramsOpen=false" @keydown.enter="tool=item.id" @keydown.space.prevent="tool=item.id">
+          <AppIcon slot="icon" :name="item.icon"/><AppIcon slot="active-icon" :name="item.icon"/>{{item.name}}
+        </mdui-navigation-bar-item>
+      </mdui-navigation-bar>
+      <mdui-navigation-drawer class="parameters" placement="right" :order="2" :modal="compactParams" :open="!compactParams||paramsOpen" close-on-esc close-on-overlay-click @close.self="paramsOpen=false">
+        <aside class="parameter-content" aria-label="处理参数">
+          <div class="parameters-title"><h2>调整参数</h2><mdui-button-icon v-if="compactParams" v-control-label aria-label="关闭参数面板" @click="paramsOpen=false"><AppIcon name="close"/></mdui-button-icon></div>
+          <div class="parameter-scroll">
+            <div v-show="tool==='upscale'" class="tool-fields">
+              <section class="parameter-section">
+                <h3>超分模型</h3>
+                <mdui-select v-control-label label="超分模型" :value="model" :disabled="busy" @change="model=($event.target as HTMLSelectElement).value as UpscaleModel"><mdui-menu-item v-for="(item,key) in modelMeta" :key="key" :value="key">{{item.name}}</mdui-menu-item></mdui-select>
+                <span class="supporting-text">{{modelMeta[model].size}}</span>
+              </section>
+              <mdui-divider/>
+              <section class="parameter-section">
+                <h3>输出倍率</h3>
+                <mdui-segmented-button-group class="scale-presets" selects="single" :value="String(scale)" full-width :disabled="busy" @change="chooseScale($event)">
+                  <mdui-segmented-button v-for="n in [1,2,3,4]" :key="n" :value="String(n)">{{n}}×</mdui-segmented-button>
+                </mdui-segmented-button-group>
+                <mdui-text-field v-control-label label="自定义倍率" type="number" :min="1" :max="4" :step=".1" suffix="×" :value="String(scale)" :disabled="busy" data-testid="scale-input" @change="updateNumber('scale',$event)"/>
+                <div class="output-dimensions"><span>输出尺寸</span><span>{{current?dimensions:'—'}}</span></div>
+              </section>
+              <mdui-divider/>
+            </div>
+            <div v-show="tool==='tone'" class="tool-fields">
+              <section class="parameter-section curve-section">
+                <div class="section-heading"><h3>色彩曲线</h3><mdui-tooltip content="重置当前曲线"><mdui-button-icon v-control-label aria-label="重置当前曲线" @click="curves={...curves,[curve]:defaultPoints(curve)}"><AppIcon name="reset"/></mdui-button-icon></mdui-tooltip></div>
+                <mdui-select v-control-label label="颜色通道" :value="curve" @change="curve=($event.target as HTMLSelectElement).value as CurveKey"><mdui-menu-item v-for="key in curveKeys" :key="key" :value="key">{{curveLabels[key]}}</mdui-menu-item></mdui-select>
+                <CurveEditor :key="curve" :points="curves[curve]" :kind="curve" :histogram="histogram" @change="changeCurve"/>
+              </section>
+              <mdui-divider/>
+              <section class="parameter-section">
+                <h3>预设</h3>
+                <div class="tone-presets">
+                  <mdui-chip @click="curves=defaultCurves()">原始色彩</mdui-chip>
+                  <mdui-chip @click="curves={...defaultCurves(),rgb:[{x:0,y:0},{x:.25,y:.17},{x:.75,y:.84},{x:1,y:1}]}">柔和对比</mdui-chip>
+                  <mdui-chip @click="curves={...defaultCurves(),r:[{x:0,y:.025},{x:.5,y:.54},{x:1,y:1}],b:[{x:0,y:0},{x:.5,y:.46},{x:1,y:.96}]}">暖意</mdui-chip>
+                </div>
+              </section>
+            </div>
+            <div v-show="tool==='cutout'" class="tool-fields">
+              <section class="parameter-section"><h3>抠图模型</h3><div class="model-row"><AppIcon name="cut"/><span>U²-Net 轻量版</span><span class="supporting-text">4.57 MB</span></div></section>
+              <mdui-divider/>
+              <section class="parameter-section">
+                <h3>优化边缘</h3>
+                <div class="slider-field"><div class="slider-label"><span>边缘收缩 / 扩张</span><output>{{maskOptions.shift>0?'+':''}}{{maskOptions.shift}} px</output></div><mdui-slider v-control-label aria-label="边缘收缩或扩张" :min="-20" :max="20" :step="1" :value="maskOptions.shift" @input="updateNumber('shift',$event)"/></div>
+                <div class="slider-field"><div class="slider-label"><span>边缘羽化</span><output>{{maskOptions.feather}} px</output></div><mdui-slider v-control-label aria-label="边缘羽化" :min="0" :max="20" :step="1" :value="maskOptions.feather" @input="updateNumber('feather',$event)"/></div>
+                <label class="switch-label option-switch"><span>反选前景</span><mdui-switch v-control-label aria-label="反选前景" :checked="maskOptions.invert" @change="maskOptions={...maskOptions,invert:($event.target as HTMLInputElement).checked}"/></label>
+                <label class="switch-label option-switch"><span>查看黑白遮罩</span><mdui-switch v-control-label aria-label="查看黑白遮罩" :checked="showMask" :disabled="!rawMask" @change="showMask=($event.target as HTMLInputElement).checked"/></label>
+                <mdui-button variant="text" @click="maskOptions=defaultMaskOptions();showMask=false"><AppIcon slot="icon" name="reset"/>重置边缘参数</mdui-button>
+              </section>
+              <mdui-divider/>
+            </div>
+            <section v-show="tool!=='tone'" class="parameter-section backend-section">
+              <h3>运行设置</h3>
+              <mdui-select v-control-label label="计算后端" :value="backend" :disabled="busy" @change="backend=($event.target as HTMLSelectElement).value as Backend|'auto'"><mdui-menu-item value="auto">自动选择</mdui-menu-item><mdui-menu-item value="webgpu" :disabled="!capabilities.webgpu">WebGPU</mdui-menu-item><mdui-menu-item value="webgl" :disabled="!capabilities.webgl">WebGL</mdui-menu-item><mdui-menu-item value="wasm">WASM · CPU</mdui-menu-item></mdui-select>
+              <mdui-select v-control-label v-show="tool==='upscale'" label="分块大小" :value="String(tile)" :disabled="busy" @change="updateNumber('tile',$event)"><mdui-menu-item value="128">128</mdui-menu-item><mdui-menu-item value="64">64</mdui-menu-item><mdui-menu-item value="32">32</mdui-menu-item></mdui-select>
+            </section>
           </div>
-          <div v-show="tool==='tone'">
-            <section class="parameter-section curve-section"><h2><span>01</span>色彩曲线<button class="text-action" @click="curves={...curves,[curve]:defaultPoints(curve)}"><AppIcon name="reset" :size="14"/>重置</button></h2><div class="curve-channels"><button v-for="key in curveKeys.slice(0,4)" :key="key" :class="['channel-'+key,{selected:curve===key}]" @click="curve=key">{{curveLabels[key]}}</button></div><div class="hue-channels"><button v-for="key in curveKeys.slice(4)" :key="key" :class="{selected:curve===key}" @click="curve=key">{{curveLabels[key]}}</button></div><CurveEditor :key="curve" :points="curves[curve]" :kind="curve" :histogram="histogram" @change="changeCurve"/><p class="curve-description">{{['hue','saturation','lightness'].includes(curve)?'横轴选择颜色范围，纵轴调整该范围的'+curveLabels[curve]+'。中线为原始值。':'左侧是暗部，右侧是亮部。向上提亮，向下压暗。'}}</p></section>
-            <section class="parameter-section"><h2><span>02</span>快速开始</h2><div class="tone-presets"><button @click="curves=defaultCurves()">原始色彩</button><button @click="curves={...defaultCurves(),rgb:[{x:0,y:0},{x:.25,y:.17},{x:.75,y:.84},{x:1,y:1}]}">柔和对比</button><button @click="curves={...defaultCurves(),r:[{x:0,y:.025},{x:.5,y:.54},{x:1,y:1}],b:[{x:0,y:0},{x:.5,y:.46},{x:1,y:.96}]}">暖意</button></div><p class="field-help">调节即时生效。导出时按原始尺寸渲染。</p></section>
+          <div class="parameter-actions">
+            <div v-if="busy" class="job-progress" role="status" aria-live="polite"><div><span>{{progressLabel}}</span><span>{{Math.round(progress*100)}}%</span></div><mdui-linear-progress :value="progress" :max="1"/></div>
+            <mdui-button v-if="busy" full-width variant="outlined" @click="cancel"><AppIcon slot="icon" name="close"/>取消处理</mdui-button>
+            <mdui-button v-else-if="tool!=='tone'" full-width :disabled="!current||loadingImage" @click="run"><AppIcon slot="icon" :name="tool==='upscale'?'expand':'cut'"/>{{tool==='upscale'?'开始超分':'开始抠图'}}</mdui-button>
+            <mdui-button v-else full-width :disabled="!current||loadingImage" @click="applyResult"><AppIcon slot="icon" name="check"/>应用调整</mdui-button>
+            <mdui-button full-width variant="outlined" :disabled="!canExport||busy||loadingImage" @click="openExport"><AppIcon slot="icon" name="download"/>导出图像</mdui-button>
           </div>
-          <div v-show="tool==='cutout'">
-            <section class="parameter-section"><h2><span>01</span>自动识别</h2><div class="cutout-model"><span class="model-icon"><AppIcon name="cut" :size="23"/></span><div><strong>U²-Net · 轻量版</strong><span>4.57 MB · 主要前景提取</span></div><span class="small-badge">本地</span></div><p class="field-help">适合人像、商品和主体明确的图片。复杂发丝、透明物体与相近背景可能需要进一步修整。</p></section>
-            <section class="parameter-section"><h2><span>02</span>优化边缘</h2><div class="slider-label"><label>边缘收缩 / 扩张</label><span>{{maskOptions.shift>0?'+':''}}{{maskOptions.shift}} px</span></div><mdui-slider v-control-label aria-label="边缘收缩或扩张" :min="-20" :max="20" :step="1" :value="maskOptions.shift" @input="updateNumber('shift',$event)"/><div class="slider-label"><label>边缘羽化</label><span>{{maskOptions.feather}} px</span></div><mdui-slider v-control-label aria-label="边缘羽化" :min="0" :max="20" :step="1" :value="maskOptions.feather" @input="updateNumber('feather',$event)"/><label class="switch-label option-switch"><span>反选前景</span><mdui-switch v-control-label aria-label="反选前景" :checked="maskOptions.invert" @change="maskOptions={...maskOptions,invert:($event.target as HTMLInputElement).checked}"/></label><label class="switch-label option-switch"><span>查看黑白遮罩</span><mdui-switch v-control-label aria-label="查看黑白遮罩" :checked="showMask" :disabled="!rawMask" @change="showMask=($event.target as HTMLInputElement).checked"/></label><button class="text-action reset-mask" @click="maskOptions=defaultMaskOptions();showMask=false"><AppIcon name="reset" :size="14"/>重置边缘参数</button></section>
-          </div>
-          <section v-show="tool!=='tone'" class="parameter-section backend-section"><h2><span>03</span>运行设置</h2><mdui-select label="计算后端" :value="backend" :disabled="busy" @change="backend=($event.target as HTMLSelectElement).value as Backend|'auto'"><mdui-menu-item value="auto">自动选择 · 优先 WebGPU</mdui-menu-item><mdui-menu-item value="webgpu" :disabled="!capabilities.webgpu">WebGPU</mdui-menu-item><mdui-menu-item value="webgl" :disabled="!capabilities.webgl">WebGL · 兼容模式</mdui-menu-item><mdui-menu-item value="wasm">WASM · CPU</mdui-menu-item></mdui-select><div v-if="tool==='upscale'" class="tile-setting"><label>分块大小</label><select aria-label="分块大小" :value="tile" :disabled="busy" @change="updateNumber('tile',$event)"><option :value="128">自动 · 128</option><option :value="64">64 · 更省内存</option><option :value="32">32 · 最低内存</option></select></div><p class="field-help">模型按需下载并缓存在本地。首次运行包含下载与编译时间。</p></section>
-          <div class="local-note"><AppIcon name="shield" :size="18"/><div><strong>图像留在本地</strong><p>无需注册，也无需上传图片。</p></div></div>
-        </div>
-        <div class="parameter-actions"><div v-if="busy" class="job-progress" role="status" aria-live="polite"><div><span>{{progressLabel}}</span><strong>{{Math.round(progress*100)}}%</strong></div><mdui-linear-progress :value="progress" :max="1"/></div><mdui-button v-if="busy" full-width variant="outlined" @click="cancel"><AppIcon slot="icon" name="close" :size="17"/>取消处理</mdui-button><mdui-button v-else-if="tool!=='tone'" full-width :disabled="!current||loadingImage" @click="run"><AppIcon slot="icon" :name="tool==='upscale'?'expand':'cut'" :size="18"/>{{tool==='upscale'?'开始超分':'开始抠图'}}<AppIcon slot="end-icon" name="arrow" :size="18"/></mdui-button><mdui-button v-else full-width variant="tonal" :disabled="!current||loadingImage" @click="applyResult"><AppIcon slot="icon" name="check" :size="18"/>应用调整</mdui-button><mdui-button full-width variant="outlined" :disabled="!canExport||busy||loadingImage" @click="openExport"><AppIcon slot="icon" name="download" :size="18"/>导出图像</mdui-button><span class="action-caption">{{current?'创作由你掌控，细节交给工坊。':'先导入一张图片，开始创作。'}}</span></div>
-      </aside>
-    </div>
-    <div v-if="dragging" class="drop-overlay"><AppIcon name="upload" :size="46"/><strong>松开，导入这张图片</strong><span>PNG / JPEG / WebP</span></div>
-    <div v-if="notice" class="notice-toast" role="status"><AppIcon name="check" :size="17"/>{{notice}}</div>
-    <mdui-dialog :open="exportOpen" headline="导出图像" close-on-overlay-click @closed="exportOpen=false"><div class="export-fields"><mdui-text-field label="文件名" :value="exportName" @input="exportName=($event.target as HTMLInputElement).value"/><mdui-select label="文件格式" :value="exportFormat" @change="exportFormat=($event.target as HTMLSelectElement).value"><mdui-menu-item value="image/png">PNG · 无损，保留透明</mdui-menu-item><mdui-menu-item value="image/jpeg">JPEG · 适合照片</mdui-menu-item><mdui-menu-item value="image/webp">WebP · 保留透明</mdui-menu-item></mdui-select><template v-if="exportFormat!=='image/png'"><div class="slider-label"><label>图像质量</label><span>{{Math.round(quality*100)}}%</span></div><mdui-slider v-control-label aria-label="导出质量" :min=".1" :max="1" :step=".01" :value="quality" @input="updateNumber('quality',$event)"/></template><label v-if="exportFormat==='image/jpeg'" class="background-color">透明区域背景色<input type="color" v-model="background"/></label><p class="field-help">{{tool==='tone'?'按原始尺寸渲染，保留所有调色细节。':'导出当前处理结果。透明效果请选择 PNG 或 WebP。'}}</p><p v-if="error" class="export-error" role="alert">{{error}}</p></div><mdui-button slot="action" variant="text" :disabled="saving" @click="exportOpen=false">取消</mdui-button><mdui-button slot="action" :loading="saving" :disabled="saving" @click="save">保存到设备</mdui-button></mdui-dialog>
-    <mdui-dialog :open="infoOpen" headline="关于像素工坊" close-on-overlay-click @closed="infoOpen=false"><div class="about-content"><p>一组小而专注的本地图像工具。使用 mdui 2 构建，推理由你的设备完成。</p><div class="about-device"><span>图形设备</span><strong>{{gpuName}}</strong></div><div class="cache-row"><span>模型本地缓存<strong>{{cacheSize}}</strong></span><mdui-button variant="outlined" :disabled="busy" @click="clearCache">清理缓存</mdui-button></div><p class="field-help">WebGL 为兼容后端。性能受浏览器、驱动、图片尺寸和模型影响。支持的输出上限：{{limits.edge}} 像素单边 / {{limits.pixels/1e6}} 百万像素。</p><div class="license-links"><a :href="`${baseUrl}licenses/cugan.txt`" target="_blank" rel="noopener">RealCUGAN · MIT ↗</a><a :href="`${baseUrl}licenses/esrgan.txt`" target="_blank" rel="noopener">Real-ESRGAN · BSD ↗</a><a :href="`${baseUrl}licenses/u2net.txt`" target="_blank" rel="noopener">U²-Net · Apache 2.0 ↗</a></div></div><mdui-button slot="action" @click="infoOpen=false">知道了</mdui-button></mdui-dialog>
+        </aside>
+      </mdui-navigation-drawer>
+      <mdui-layout-main>
+        <main class="workspace">
+          <div class="workspace-heading"><h1>{{activeTool.name}}</h1><div class="workspace-actions"><mdui-button v-if="current" variant="text" @click="fileInput?.click()"><AppIcon slot="icon" name="upload"/>导入图片</mdui-button><mdui-button v-if="compactParams" class="mobile-params" variant="tonal" @click="paramsOpen=true"><AppIcon slot="icon" name="settings"/>调整参数</mdui-button></div></div>
+          <mdui-card v-if="error&&!exportOpen" variant="filled" class="error-banner" role="alert"><AppIcon name="info"/><span>{{error}}</span><mdui-button-icon v-control-label aria-label="关闭错误提示" @click="error=''"><AppIcon name="close"/></mdui-button-icon></mdui-card>
+          <mdui-card v-if="!current" variant="filled" class="empty-workspace" aria-label="导入图像">
+            <AppIcon name="image" :size="48"/>
+            <h2>导入图片</h2>
+            <p class="supporting-text">PNG · JPEG · WebP</p>
+            <div class="import-actions"><mdui-button :loading="loadingImage" :disabled="loadingImage" @click="fileInput?.click()"><AppIcon slot="icon" name="upload"/>选择图片</mdui-button><mdui-button class="demo-button" variant="text" @click="demo">试用示例</mdui-button></div>
+          </mdui-card>
+          <template v-else>
+            <div class="file-strip"><div class="file-info"><AppIcon name="image"/><span class="filename" :title="filename">{{filename}}</span><span class="supporting-text">{{current.width}} × {{current.height}}</span><mdui-chip v-if="steps" class="step-badge">已应用 {{steps}} 步</mdui-chip></div><mdui-button variant="text" @click="reset"><AppIcon slot="icon" name="reset"/>恢复原图</mdui-button></div>
+            <ImageViewport v-if="before" :before="before" :after="after" :version="previewVersion" :width="displaySize[0]!" :height="displaySize[1]!" :compare="compare" :mask="tool==='cutout'&&showMask"/>
+            <div class="result-toolbar"><label class="switch-label"><mdui-switch v-control-label aria-label="前后对比" :checked="compare" @change="compare=($event.target as HTMLInputElement).checked"/><span>前后对比</span></label><span v-if="tool==='tone'" class="result-detail">{{toneBackend}}</span><span v-else-if="resultInfo" class="result-detail">{{prettyBackend(resultInfo.backend)}} · {{(resultInfo.ms/1000).toFixed(2)}} s</span><span v-else class="result-detail">就绪</span><mdui-button v-if="canExport" variant="text" :disabled="busy" @click="applyResult">作为下一步输入<AppIcon slot="end-icon" name="arrow"/></mdui-button></div>
+            <div v-if="busy&&compactParams&&!paramsOpen" class="compact-progress" role="status"><span>{{progressLabel}}</span><mdui-linear-progress :value="progress" :max="1"/><mdui-button variant="text" @click="cancel">取消处理</mdui-button></div>
+          </template>
+        </main>
+      </mdui-layout-main>
+    </mdui-layout>
+    <div v-if="dragging" class="drop-overlay"><AppIcon name="upload" :size="48"/><h2>松开以导入图片</h2></div>
+    <mdui-snackbar :open="!!notice" :auto-close-delay="4500" @closed.self="notice=''">{{notice}}</mdui-snackbar>
+    <mdui-dialog :open="exportOpen" headline="导出图像" close-on-overlay-click close-on-esc @closed.self="exportOpen=false">
+      <div class="dialog-fields export-fields">
+        <mdui-text-field v-control-label label="文件名" :value="exportName" @input="exportName=($event.target as HTMLInputElement).value"/>
+        <mdui-select v-control-label label="文件格式" :value="exportFormat" @change="exportFormat=($event.target as HTMLSelectElement).value"><mdui-menu-item value="image/png">PNG</mdui-menu-item><mdui-menu-item value="image/jpeg">JPEG</mdui-menu-item><mdui-menu-item value="image/webp">WebP</mdui-menu-item></mdui-select>
+        <div v-show="exportFormat!=='image/png'" class="slider-field"><div class="slider-label"><span>图像质量</span><output>{{Math.round(quality*100)}}%</output></div><mdui-slider v-control-label aria-label="导出质量" :min=".1" :max="1" :step=".01" :value="quality" @input="updateNumber('quality',$event)"/></div>
+        <mdui-text-field v-control-label v-show="exportFormat==='image/jpeg'" label="透明区域背景色" :value="background" pattern="#[0-9a-fA-F]{6}" helper="#RRGGBB" @input="background=($event.target as HTMLInputElement).value"/>
+        <p v-if="error" class="export-error" role="alert">{{error}}</p>
+      </div>
+      <mdui-button slot="action" variant="text" :disabled="saving" @click="exportOpen=false">取消</mdui-button><mdui-button slot="action" :loading="saving" :disabled="saving||(exportFormat==='image/jpeg'&&!validHex(background))" @click="save">保存到设备</mdui-button>
+    </mdui-dialog>
+    <mdui-dialog :open="themeOpen" headline="外观与主题色" close-on-overlay-click close-on-esc @closed.self="themeOpen=false">
+      <div class="dialog-fields theme-fields">
+        <h3>外观</h3>
+        <mdui-segmented-button-group selects="single" full-width :value="themeMode" @change="chooseMode($event)"><mdui-segmented-button value="auto"><AppIcon slot="icon" name="auto"/>系统</mdui-segmented-button><mdui-segmented-button value="light"><AppIcon slot="icon" name="sun"/>浅色</mdui-segmented-button><mdui-segmented-button value="dark"><AppIcon slot="icon" name="moon"/>深色</mdui-segmented-button></mdui-segmented-button-group>
+        <h3>主题色</h3>
+        <div class="seed-presets"><mdui-tooltip v-for="preset in seedPresets" :key="preset.value" :content="preset.name"><mdui-button-icon v-control-label :variant="themeSeed===preset.value?'tonal':'standard'" :aria-label="preset.name+'主题色'" :aria-pressed="themeSeed===preset.value" @click="applySeed(preset.value)"><AppIcon name="circle" :style="{color:preset.value}"/></mdui-button-icon></mdui-tooltip></div>
+        <mdui-text-field v-control-label label="自定义主题色" :value="seedDraft" :helper="seedError?'请输入有效的十六进制颜色，如 #6750A4':'#RRGGBB'" pattern="#?[0-9a-fA-F]{6}" @input="seedDraft=($event.target as HTMLInputElement).value;seedError=false" @keydown.enter="applySeed()"/>
+        <span v-if="seedError" class="export-error" role="alert">主题色格式无效</span>
+      </div>
+      <mdui-button slot="action" variant="text" @click="themeOpen=false">完成</mdui-button><mdui-button slot="action" @click="applySeed()">应用颜色</mdui-button>
+    </mdui-dialog>
+    <mdui-dialog :open="infoOpen" headline="设备与模型缓存" close-on-overlay-click close-on-esc @closed.self="infoOpen=false">
+      <div class="dialog-fields"><h3>图形设备</h3><p class="device-info">{{gpuName}}</p><div class="cache-row"><div><h3>模型缓存</h3><span>{{cacheSize}}</span></div><mdui-button variant="outlined" :disabled="busy" @click="clearCache">清理缓存</mdui-button></div><div class="output-dimensions"><span>输出上限</span><span>{{limits.edge}} px / {{limits.pixels/1e6}} MP</span></div><mdui-divider/><h3>模型许可</h3><div class="license-links"><mdui-button variant="text" :href="`${baseUrl}licenses/cugan.txt`" target="_blank" rel="noopener">RealCUGAN · MIT</mdui-button><mdui-button variant="text" :href="`${baseUrl}licenses/esrgan.txt`" target="_blank" rel="noopener">Real-ESRGAN · BSD</mdui-button><mdui-button variant="text" :href="`${baseUrl}licenses/u2net.txt`" target="_blank" rel="noopener">U²-Net · Apache 2.0</mdui-button></div></div><mdui-button slot="action" variant="text" @click="infoOpen=false">关闭</mdui-button>
+    </mdui-dialog>
   </div>
 </template>
