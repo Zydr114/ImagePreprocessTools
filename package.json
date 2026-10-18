@@ -1,0 +1,31 @@
+{
+  "name": "image-preprocess-tools",
+  "version": "0.1.0",
+  "private": true,
+  "overrides": { "onnx-proto": { "protobufjs": "7.6.6" } },
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "npm run assets && vue-tsc --noEmit && vite build",
+    "preview": "vite preview --host 0.0.0.0",
+    "assets": "node scripts/runtime-assets.mjs",
+    "models": "node scripts/download-models.mjs",
+    "test": "vitest run",
+    "test:browser": "playwright test"
+  },
+  "dependencies": {
+    "mdui": "2.1.5",
+    "onnx-proto": "^8.0.1",
+    "onnxruntime-web": "1.30.0",
+    "vue": "^3.5.22"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.56.0",
+    "@types/node": "^24.9.1",
+    "@vitejs/plugin-vue": "^6.0.1",
+    "typescript": "~5.9.3",
+    "vite": "^7.1.12",
+    "vitest": "^5.0.5",
+    "vue-tsc": "^3.1.1"
+  }
+}

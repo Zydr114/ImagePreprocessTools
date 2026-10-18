@@ -1,0 +1,60 @@
+{
+  "version": 1,
+  "runtimeVersion": "1.30.0",
+  "precision": "float32",
+  "assetBase": "https://raw.githubusercontent.com/Zydr114/ImagePreprocessTools/main/public/models/",
+  "files": {
+    "realesr-general-x4v3.onnx": {
+      "bytes": 4876769,
+      "sha256": "794eeb096bf617a6425fca8d7783c8be2bd3efc97d458946d931b64004dd8f46"
+    },
+    "realesr-animevideov3.onnx": {
+      "bytes": 2498513,
+      "sha256": "68934d202bf66a973f36f8c3b6d420267c7105c6036e6cdc191900cfe847ff33"
+    },
+    "cugan2-stage0.onnx": {
+      "bytes": 736459,
+      "sha256": "194e45f1c3437b3f46f739481476cdb4d1655c881e7694a9ff166ccc3156b465"
+    },
+    "cugan2-stage1.onnx": {
+      "bytes": 1558509,
+      "sha256": "38b94b017a4455ad0bcd841d846dae28018d1c564b7db7a8bb4e34ba593a6a90"
+    },
+    "cugan2-stage2.onnx": {
+      "bytes": 4201217,
+      "sha256": "c2eff20201b0ecedba432116144a4b4c17669a80e12fc989041d66ef2eca58e3"
+    },
+    "cugan2-stage3.onnx": {
+      "bytes": 4926964,
+      "sha256": "d643724aa1101236344f4f54380c21d2a8d65a64aedcab840cfefeb5e1b86e9a"
+    },
+    "cugan2-stage4.onnx": {
+      "bytes": 5155737,
+      "sha256": "78ff5f4593364b3b88a580615871e55aa2c074ca64847b3e1e1a64849e80ecbb"
+    },
+    "cugan4-stage0.onnx": {
+      "bytes": 736459,
+      "sha256": "bfbf69c187097fb542284be33f89376240189b81b44da04a507790ecd45d0fae"
+    },
+    "cugan4-stage1.onnx": {
+      "bytes": 1878887,
+      "sha256": "f529c7733d525232b4799dedf67c32bd7ff59ccdba479865d2b1c13b013a7642"
+    },
+    "cugan4-stage2.onnx": {
+      "bytes": 4521595,
+      "sha256": "2c3cf949ecef8c071c99078b64c72747a668250cbff674e6d69ceadd09de637b"
+    },
+    "cugan4-stage3.onnx": {
+      "bytes": 5247342,
+      "sha256": "70fffd4a695379cb220f516733f0f07040f60e7c8562dce2e246ec95ef4ac460"
+    },
+    "cugan4-stage4.onnx": {
+      "bytes": 5647849,
+      "sha256": "5968d7261544f830eafa843c59617573c202a31eb0b93728006b620b87774ca6"
+    },
+    "u2netp.onnx": {
+      "bytes": 4567945,
+      "sha256": "bf6891eef01d008975a2fd1761bad84fe79a091e06dd75801aae7ff9b8eed6f5"
+    }
+  }
+}

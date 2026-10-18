@@ -1,0 +1,42 @@
+{
+  "cugan.py": {
+    "url": "https://raw.githubusercontent.com/bilibili/ailab/main/Real-CUGAN/upcunet_v3.py",
+    "bytes": 74531,
+    "sha256": "ef6c4e433bcac37b75ffba0a4044987ddd3ecfe7765a74a3c93887954e45562b"
+  },
+  "cugan.LICENSE": {
+    "url": "https://raw.githubusercontent.com/bilibili/ailab/main/Real-CUGAN/LICENSE",
+    "bytes": 1065,
+    "sha256": "8cad8cfdf94baaf23519061af913770e52476ddec2a311e9510582e7bed13cba"
+  },
+  "esrgan.LICENSE": {
+    "url": "https://raw.githubusercontent.com/xinntao/Real-ESRGAN/master/LICENSE",
+    "bytes": 1519,
+    "sha256": "4a699ec4863d96a91fc265948a0c90033f7e8735d515524dcf3444736406e0c2"
+  },
+  "u2net.LICENSE": {
+    "url": "https://raw.githubusercontent.com/xuebinqin/U-2-Net/master/LICENSE",
+    "bytes": 11357,
+    "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+  },
+  "updated_weights.zip": {
+    "url": "https://github.com/bilibili/ailab/releases/download/Real-CUGAN/updated_weights.zip",
+    "bytes": 54001450,
+    "sha256": "99a8ce2e4a6ce0548668879f148b3db3e143201d3df42c825a4143490396da53"
+  },
+  "realesr-general-x4v3.pth": {
+    "url": "https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.5.0/realesr-general-x4v3.pth",
+    "bytes": 4885111,
+    "sha256": "8dc7edb9ac80ccdc30c3a5dca6616509367f05fbc184ad95b731f05bece96292"
+  },
+  "realesr-animevideov3.pth": {
+    "url": "https://github.com/xinntao/Real-ESRGAN/releases/download/v0.2.5.0/realesr-animevideov3.pth",
+    "bytes": 2504012,
+    "sha256": "b8a8376811077954d82ca3fcf476f1ac3da3e8a68a4f4d71363008000a18b75d"
+  },
+  "u2netp.onnx": {
+    "url": "https://github.com/danielgatis/rembg/releases/download/v0.0.0/u2netp.onnx",
+    "bytes": 4574861,
+    "sha256": "309c8469258dda742793dce0ebea8e6dd393174f89934733ecc8b14c76f4ddd8"
+  }
+}

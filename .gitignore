@@ -1,0 +1,10 @@
+node_modules/
+dist/
+.venv/
+.model-cache/
+artifacts/
+test-results/
+playwright-report/
+public/ort/
+*.log
+__pycache__/

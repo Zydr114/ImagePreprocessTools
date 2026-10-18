@@ -1,0 +1,365 @@
+{
+  "device": {
+    "webgpu": {
+      "vendor": "amd",
+      "architecture": "rdna-3",
+      "device": "",
+      "description": "",
+      "isFallbackAdapter": false
+    },
+    "webgl": "ANGLE (AMD, Vulkan 1.4.354 (AMD Radeon 880M Graphics (RADV STRIX1) (0x0000150E)), radv)"
+  },
+  "results": [
+    {
+      "backend": "webgpu",
+      "file": "realesr-general-x4v3.onnx",
+      "length": 51504,
+      "mae": 4.763784406069607e-7,
+      "max": 0.000003159046173095703,
+      "byteMAE": 0.00011649580615097856,
+      "ms": 725.7999999821186
+    },
+    {
+      "backend": "webgpu",
+      "file": "realesr-animevideov3.onnx",
+      "length": 51504,
+      "mae": 4.541519022471196e-7,
+      "max": 0.0000035762786865234375,
+      "byteMAE": 0.00015532774153463808,
+      "ms": 132.5
+    },
+    {
+      "backend": "webgpu",
+      "file": "cugan2-stage0.onnx",
+      "length": 64,
+      "mae": 1.9453000277280807e-7,
+      "max": 0.0000019073486328125,
+      "byteMAE": 0,
+      "ms": 47.70000001788139
+    },
+    {
+      "backend": "webgpu",
+      "file": "cugan2-stage1.onnx",
+      "length": 128,
+      "mae": 3.749046300072223e-7,
+      "max": 0.0000021457672119140625,
+      "byteMAE": 0,
+      "ms": 117.59999999403954
+    },
+    {
+      "backend": "webgpu",
+      "file": "cugan2-stage2.onnx",
+      "length": 128,
+      "mae": 0.0000020379084162414074,
+      "max": 0.00000858306884765625,
+      "byteMAE": 0,
+      "ms": 103.5
+    },
+    {
+      "backend": "webgpu",
+      "file": "cugan2-stage3.onnx",
+      "length": 64,
+      "mae": 0.000002773274900391698,
+      "max": 0.000012874603271484375,
+      "byteMAE": 0,
+      "ms": 134.7999999821186
+    },
+    {
+      "backend": "webgpu",
+      "file": "cugan2-stage4.onnx",
+      "length": 12288,
+      "mae": 2.321097175202643e-7,
+      "max": 0.0000015497207641601562,
+      "byteMAE": 0.00008138020833333333,
+      "ms": 161
+    },
+    {
+      "backend": "webgpu",
+      "file": "cugan4-stage0.onnx",
+      "length": 64,
+      "mae": 2.08965502679348e-7,
+      "max": 0.0000019073486328125,
+      "byteMAE": 0,
+      "ms": 34.19999998807907
+    },
+    {
+      "backend": "webgpu",
+      "file": "cugan4-stage1.onnx",
+      "length": 128,
+      "mae": 7.759881555102766e-7,
+      "max": 0.000004291534423828125,
+      "byteMAE": 0,
+      "ms": 92.59999999403954
+    },
+    {
+      "backend": "webgpu",
+      "file": "cugan4-stage2.onnx",
+      "length": 128,
+      "mae": 0.0000011074589565396309,
+      "max": 0.00000476837158203125,
+      "byteMAE": 0,
+      "ms": 110.69999998807907
+    },
+    {
+      "backend": "webgpu",
+      "file": "cugan4-stage3.onnx",
+      "length": 64,
+      "mae": 0.0000010587828001007438,
+      "max": 0.0000057220458984375,
+      "byteMAE": 0,
+      "ms": 98.69999998807907
+    },
+    {
+      "backend": "webgpu",
+      "file": "cugan4-stage4.onnx",
+      "length": 49152,
+      "mae": 2.220167516497895e-7,
+      "max": 0.0000015497207641601562,
+      "byteMAE": 0.00008138020833333333,
+      "ms": 115.5
+    },
+    {
+      "backend": "webgpu",
+      "file": "u2netp.onnx",
+      "length": 102400,
+      "mae": 1.788050607842706e-7,
+      "max": 0.00000994652509689331,
+      "byteMAE": 0.00001953125,
+      "ms": 307.09999999403954
+    },
+    {
+      "backend": "webgl",
+      "file": "realesr-general-x4v3.onnx",
+      "length": 51504,
+      "mae": 5.060530280096629e-7,
+      "max": 0.000003427267074584961,
+      "byteMAE": 0.00013591177384280833,
+      "ms": 369.69999998807907
+    },
+    {
+      "backend": "webgl",
+      "file": "realesr-animevideov3.onnx",
+      "length": 51504,
+      "mae": 4.5138603477336933e-7,
+      "max": 0.0000029802322387695312,
+      "byteMAE": 0.00017474370922646785,
+      "ms": 66.90000000596046
+    },
+    {
+      "backend": "webgl",
+      "file": "cugan2-stage0.onnx",
+      "length": 64,
+      "mae": 9.470968507230282e-7,
+      "max": 0.00000762939453125,
+      "byteMAE": 0,
+      "ms": 207.19999998807907
+    },
+    {
+      "backend": "webgl",
+      "file": "cugan2-stage1.onnx",
+      "length": 128,
+      "mae": 6.680966180283576e-7,
+      "max": 0.0000069141387939453125,
+      "byteMAE": 0,
+      "ms": 260.60000002384186
+    },
+    {
+      "backend": "webgl",
+      "file": "cugan2-stage2.onnx",
+      "length": 128,
+      "mae": 0.000001965614501386881,
+      "max": 0.000011444091796875,
+      "byteMAE": 0,
+      "ms": 242.40000000596046
+    },
+    {
+      "backend": "webgl",
+      "file": "cugan2-stage3.onnx",
+      "length": 64,
+      "mae": 0.0000029089278541505337,
+      "max": 0.0000152587890625,
+      "byteMAE": 0,
+      "ms": 227.69999998807907
+    },
+    {
+      "backend": "webgl",
+      "file": "cugan2-stage4.onnx",
+      "length": 12288,
+      "mae": 2.3635645144774267e-7,
+      "max": 0.0000013709068298339844,
+      "byteMAE": 0.00008138020833333333,
+      "ms": 294.90000000596046
+    },
+    {
+      "backend": "webgl",
+      "file": "cugan4-stage0.onnx",
+      "length": 64,
+      "mae": 0.0000011165975593030453,
+      "max": 0.0000095367431640625,
+      "byteMAE": 0,
+      "ms": 139.40000000596046
+    },
+    {
+      "backend": "webgl",
+      "file": "cugan4-stage1.onnx",
+      "length": 128,
+      "mae": 0.0000011669326340779662,
+      "max": 0.00000762939453125,
+      "byteMAE": 0,
+      "ms": 544.5999999940395
+    },
+    {
+      "backend": "webgl",
+      "file": "cugan4-stage2.onnx",
+      "length": 128,
+      "mae": 0.0000012103409972041845,
+      "max": 0.000007152557373046875,
+      "byteMAE": 0,
+      "ms": 282.90000000596046
+    },
+    {
+      "backend": "webgl",
+      "file": "cugan4-stage3.onnx",
+      "length": 64,
+      "mae": 9.678042260929942e-7,
+      "max": 0.000005245208740234375,
+      "byteMAE": 0,
+      "ms": 203.40000000596046
+    },
+    {
+      "backend": "webgl",
+      "file": "cugan4-stage4.onnx",
+      "length": 49152,
+      "mae": 2.2123860314119762e-7,
+      "max": 0.0000014901161193847656,
+      "byteMAE": 0.000040690104166666664,
+      "ms": 369.19999998807907
+    },
+    {
+      "backend": "webgl",
+      "file": "u2netp.onnx",
+      "length": 102400,
+      "mae": 2.071437746309357e-7,
+      "max": 0.000014826655387878418,
+      "byteMAE": 0.0000390625,
+      "ms": 1471.2999999821186
+    },
+    {
+      "backend": "wasm",
+      "file": "realesr-general-x4v3.onnx",
+      "length": 51504,
+      "mae": 2.865426262025324e-7,
+      "max": 0.0000025033950805664062,
+      "byteMAE": 0.00003883193538365952,
+      "ms": 291.69999998807907
+    },
+    {
+      "backend": "wasm",
+      "file": "realesr-animevideov3.onnx",
+      "length": 51504,
+      "mae": 3.1510873649381596e-7,
+      "max": 0.0000022649765014648438,
+      "byteMAE": 0.00007766387076731904,
+      "ms": 75.39999997615814
+    },
+    {
+      "backend": "wasm",
+      "file": "cugan2-stage0.onnx",
+      "length": 64,
+      "mae": 9.972136467695236e-7,
+      "max": 0.0000152587890625,
+      "byteMAE": 0,
+      "ms": 32.19999998807907
+    },
+    {
+      "backend": "wasm",
+      "file": "cugan2-stage1.onnx",
+      "length": 128,
+      "mae": 5.691144906450063e-7,
+      "max": 0.0000040531158447265625,
+      "byteMAE": 0,
+      "ms": 64
+    },
+    {
+      "backend": "wasm",
+      "file": "cugan2-stage2.onnx",
+      "length": 128,
+      "mae": 0.000002049084287136793,
+      "max": 0.000011444091796875,
+      "byteMAE": 0,
+      "ms": 80.2000000178814
+    },
+    {
+      "backend": "wasm",
+      "file": "cugan2-stage3.onnx",
+      "length": 64,
+      "mae": 0.0000037185964174568653,
+      "max": 0.000019073486328125,
+      "byteMAE": 0,
+      "ms": 115.69999998807907
+    },
+    {
+      "backend": "wasm",
+      "file": "cugan2-stage4.onnx",
+      "length": 12288,
+      "mae": 3.806399035966024e-7,
+      "max": 0.0000017881393432617188,
+      "byteMAE": 0.00008138020833333333,
+      "ms": 96
+    },
+    {
+      "backend": "wasm",
+      "file": "cugan4-stage0.onnx",
+      "length": 64,
+      "mae": 0.0000012560049071907997,
+      "max": 0.00000858306884765625,
+      "byteMAE": 0,
+      "ms": 18.5
+    },
+    {
+      "backend": "wasm",
+      "file": "cugan4-stage1.onnx",
+      "length": 128,
+      "mae": 0.0000015583500498905778,
+      "max": 0.000008106231689453125,
+      "byteMAE": 0,
+      "ms": 78.2999999821186
+    },
+    {
+      "backend": "wasm",
+      "file": "cugan4-stage2.onnx",
+      "length": 128,
+      "mae": 0.0000025753106456249952,
+      "max": 0.000010967254638671875,
+      "byteMAE": 0,
+      "ms": 100.80000001192093
+    },
+    {
+      "backend": "wasm",
+      "file": "cugan4-stage3.onnx",
+      "length": 64,
+      "mae": 0.0000020628613128792495,
+      "max": 0.0000171661376953125,
+      "byteMAE": 0,
+      "ms": 108.90000000596046
+    },
+    {
+      "backend": "wasm",
+      "file": "cugan4-stage4.onnx",
+      "length": 49152,
+      "mae": 1.8508778036145182e-7,
+      "max": 0.0000015497207641601562,
+      "byteMAE": 0.000020345052083333332,
+      "ms": 136.7000000178814
+    },
+    {
+      "backend": "wasm",
+      "file": "u2netp.onnx",
+      "length": 102400,
+      "mae": 1.991784665733576e-7,
+      "max": 0.000013530254364013672,
+      "byteMAE": 0.000048828125,
+      "ms": 1460.5999999940395
+    }
+  ]
+}
