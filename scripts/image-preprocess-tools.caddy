@@ -1,0 +1,15 @@
+# ImagePreprocessTools: independent static application route.
+redir /ImageProprocessTools /ImageProprocessTools/ 308
+
+handle_path /ImageProprocessTools/* {
+	root * /var/www/tool.talium.site/ImageProprocessTools/current
+	header X-Content-Type-Options nosniff
+	header Referrer-Policy strict-origin-when-cross-origin
+	route {
+		@imageHashed path /assets/*
+		header @imageHashed Cache-Control "public, max-age=31536000, immutable"
+		@imageEntry not path /assets/*
+		header @imageEntry Cache-Control "no-cache"
+		file_server
+	}
+}
